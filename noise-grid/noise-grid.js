@@ -6,17 +6,24 @@ const height = 700;
 const noiseIncrement = 0.1;
 
 let grid = []
+let zNoiseOffset = 0;
 
 function setup() {
     createCanvas(width, height);
-    grid = [...new Array(height / cellSize + 1)]
-        .map((value, row) => [...new Array(width / cellSize + 1)]
-        // Simplex noise gives a number between -1 and 1
-        .map((value, column) => simplex.noise2D(column * noiseIncrement, row * noiseIncrement)));
 }
 
 function draw() {
     background(122);
+    
+    grid = [...new Array(height / cellSize + 1)]
+        .map((value, row) => [...new Array(width / cellSize + 1)]
+            // Simplex noise gives a number between -1 and 1
+            .map((value, column) => {
+                return simplex.noise3D(column * noiseIncrement, row * noiseIncrement, zNoiseOffset);
+            }));
+    
+    zNoiseOffset += 0.0005;
+    
     for (let row = 0; row < grid.length - 1; row++) {
         for (let column = 0; column < grid[row].length - 1; column++) {
             stroke(grid[row][column] * 255);
