@@ -21,7 +21,7 @@ function draw() {
         .map((value, row) => [...new Array(width / cellSize + 1)]
             // Simplex noise gives a number between -1 and 1
             .map((value, column) => {
-                return simplex.noise3D(column * noiseIncrement, row * noiseIncrement, zNoiseOffset);
+                return simplex.noise2D(column * noiseIncrement, row * noiseIncrement, zNoiseOffset);
             }));
     
     zNoiseOffset += 0.0005;
