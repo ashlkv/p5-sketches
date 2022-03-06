@@ -10,10 +10,11 @@ new p5((p5) => {
 
     let grid = []
     let zNoiseOffset = 0;
+    let level = 0;
 
     p5.setup = () => {
         p5.createCanvas(width, height);
-        p5.frameRate(1)
+        p5.frameRate(25)
     }
 
     p5.draw = () => {
@@ -36,7 +37,8 @@ new p5((p5) => {
             }
         }
 
-        traverseGrid(grid, cellSize, Math.ceil)
+        traverseGrid(grid, cellSize, (noise) => noise >= level ? 1 : 0)
+        level += 0.001;
     }
 
     const connectVectors = (fromVector, toVector) => {
