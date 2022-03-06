@@ -12,6 +12,7 @@ new p5((p5) => {
     let grid = []
     let zNoiseOffset = 0;
     let level = -1;
+    let occupiedPositions = {};
 
     p5.setup = () => {
         p5.createCanvas(width, height);
@@ -30,15 +31,15 @@ new p5((p5) => {
 
         zNoiseOffset += 0.0005;
 
-        traverseGrid(grid, cellSize, level, (noise) => noise >= level ? 1 : 0)
+        traverseGridAtLevel(grid, cellSize, level, (noise) => noise >= level ? 1 : 0)
         level += 0.1;
     }
-
-    const connectVectors = (fromVector, toVector) => {
-        return p5.line(fromVector.x, fromVector.y, toVector.x, toVector.y);
-    }
-
     const colorCircle = (fromVector) => {
+        const positionKey = `${fromVector.x},${fromVector.y}`;
+        if (occupiedPositions[positionKey]) {
+            return;
+        }
+        occupiedPositions[positionKey] = true;
         p5.drawingContext.shadowOffsetX = 0;
         p5.drawingContext.shadowOffsetY = 0;
         p5.drawingContext.shadowBlur = 10;
@@ -57,9 +58,11 @@ new p5((p5) => {
      *
      * @param grid
      * @param cellSize
+     * @param level
      * @param polarizeNoise The function receiving floating numbers from -1 to 1 and returning 0 or 1
      */
-    const traverseGrid = (grid, cellSize, level, polarizeNoise = Math.ceil) => {
+    const traverseGridAtLevel = (grid, cellSize, level, polarizeNoise = Math.ceil) => {
+        occupiedPositions = {};
         for (let row = 0; row < grid.length - 1; row ++) {
             for (let column = 0; column < grid[row].length - 1; column ++) {
                 const value = grid[row][column];
@@ -85,7 +88,6 @@ new p5((p5) => {
                 const decimalNumber = parseInt(binaryNumber, 2)
                 p5.stroke(255);
                 p5.strokeWeight(1);
-                // TODO Do not draw multiple circles on the same point on the same level.
                 // See https://youtu.be/0ZONMNUKTfU?t=552 for the visual representation of lines.
                 switch (decimalNumber) {
                     case 0:
