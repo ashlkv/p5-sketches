@@ -22,6 +22,8 @@ new p5((p5) => {
     const end = grid[rows - 1][columns - 1]
 
     start.distance = 0;
+    start.wall = false;
+    end.wall = false;
     const openSet = [start];
     const closedSet = []
 
@@ -31,9 +33,10 @@ new p5((p5) => {
         this.distance = Infinity;
         this.grid = grid;
         this.previous = undefined;
+        this.wall = p5.random(0, 1) < 0.2;
 
         this.show = (color) => {
-            p5.fill(color);
+            p5.fill(this.wall ? 0 : color);
             p5.rect(this.column * cellSize, this.row * cellSize, cellSize, cellSize);
         }
 
@@ -67,6 +70,9 @@ new p5((p5) => {
         this.showPath = () => {
             const path = [];
             let current = this;
+            if (!current.previous) {
+                return;
+            }
             while (current.previous) {
                 path.push(current.previous);
                 current = current.previous;
@@ -80,6 +86,13 @@ new p5((p5) => {
     p5.setup = () => {
         p5.createCanvas(width, height);
         p5.background(255);
+        for (const row of grid) {
+            for (const spot of row) {
+                if (spot.wall) {
+                    spot.show();
+                }
+            }
+        }
     }
 
     p5.draw = () => {
@@ -99,7 +112,7 @@ new p5((p5) => {
             openSet.remove(spot);
             closedSet.push(spot);
             for (const neighbor of spot.getNeighbors()) {
-                if (closedSet.includes(neighbor)) {
+                if (closedSet.includes(neighbor) || neighbor.wall) {
                     continue;
                 }
                 const distance = spot.distance + 1;
@@ -114,7 +127,7 @@ new p5((p5) => {
 
             spot.showPath();
         } else {
-            // no solution
+            p5.noLoop();
         }
     }
 });
