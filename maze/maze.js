@@ -1,6 +1,6 @@
 new p5((p5) => {
-    const width = 300;
-    const height = 300;
+    const width = 600;
+    const height = 700;
 
     const cellSize = 20;
     const columns = width / cellSize;
@@ -33,7 +33,7 @@ new p5((p5) => {
         this.distance = Infinity;
         this.grid = grid;
         this.previous = undefined;
-        this.wall = p5.random(0, 1) < 0.2;
+        this.wall = p5.random(0, 1) < 0.4;
 
         this.show = (color) => {
             p5.fill(this.wall ? 0 : color);
@@ -42,27 +42,41 @@ new p5((p5) => {
 
         this.guess = (end) => {
             // Eucledian distance
-            // return p5.dist(this.column, this.row, end.column, end.row)
+            return p5.dist(this.column, this.row, end.column, end.row)
 
             // Manhattan distance
-            return Math.abs(this.column - end.column) + Math.abs(this.row - end.row);
+            // return Math.abs(this.column - end.column) + Math.abs(this.row - end.row);
         };
 
         this.f = (end) => this.distance + this.guess(end);
 
         this.getNeighbors = () => {
             const neighbors = []
+            const rows = this.grid.length;
+            const columns = this.grid[0].length;
             if (this.row > 0) {
                 neighbors.push(this.grid[this.row - 1][this.column])
             }
             if (this.column > 0) {
                 neighbors.push(this.grid[this.row][this.column - 1])
             }
-            if (this.column < this.grid[0].length - 1) {
+            if (this.column < columns - 1) {
                 neighbors.push(this.grid[this.row][this.column + 1])
             }
-            if (this.row < this.grid.length - 1) {
+            if (this.row < rows - 1) {
                 neighbors.push(this.grid[this.row + 1][this.column])
+            }
+            if (this.row > 0 && this.column > 0) {
+                neighbors.push(this.grid[this.row - 1][this.column - 1])
+            }
+            if (this.row > 0 && this.column < columns - 1) {
+                neighbors.push(this.grid[this.row - 1][this.column + 1])
+            }
+            if (this.row < rows - 1 && this.column < columns - 1) {
+                neighbors.push(this.grid[this.row + 1][this.column + 1])
+            }
+            if (this.row < rows - 1 && this.column > 0) {
+                neighbors.push(this.grid[this.row + 1][this.column - 1])
             }
             return neighbors;
         }
@@ -106,8 +120,10 @@ new p5((p5) => {
 
         if (openSet.length > 0) {
             const spot = openSet.reduce((winner, spot) => spot.f(end) < winner.f(end) ? spot : winner, openSet[0])
+            spot.showPath();
             if (spot === end) {
                 p5.noLoop();
+                return;
             }
             openSet.remove(spot);
             closedSet.push(spot);
@@ -118,17 +134,16 @@ new p5((p5) => {
                 const distance = spot.distance + 1;
                 if (distance < neighbor.distance) {
                     neighbor.distance = distance;
+                    neighbor.previous = spot;
                 }
                 if (!openSet.includes(neighbor)) {
                     openSet.push(neighbor)
                 }
-                neighbor.previous = spot;
             }
-
-            spot.showPath();
         } else {
             p5.noLoop();
         }
+
     }
 });
 
