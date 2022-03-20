@@ -11,7 +11,7 @@ new p5((p5) => {
 
     p5.setup = () => {
         p5.createCanvas(710, 400);
-        w = p5.width + 16;
+        w = p5.height + 16;
         dx = (p5.TWO_PI / period) * xspacing;
         yvalues = new Array(Math.floor(w / xspacing));
     }
@@ -40,7 +40,7 @@ new p5((p5) => {
         p5.fill(255);
         // A simple way to draw the wave with an ellipse at each location
         for (let x = 0; x < yvalues.length; x++) {
-            p5.ellipse(x * xspacing, p5.height / 2 + yvalues[x], 16, 16);
+            p5.ellipse(x * xspacing, p5.width / 2 + yvalues[x], 16, 16);
         }
     }
 }, document.querySelector('main'));
