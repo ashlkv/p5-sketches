@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+  <script src="../node_modules/p5/lib/p5.js"></script>
+  <script src="./wave.js"></script>
+  <script>
+      window.P5 = p5;
+
+      new p5((p5) => {
+          const width = 600;
+          const height = 600;
+          const getNewWave = () => {
+              const amplitude = p5.random(10, 50);
+              const wavelength = p5.random(width / 2, width);
+              const phase = p5.PI * 2 / p5.random(0, 1);
+              return new Wave(p5, amplitude, wavelength, phase, {vertical: true, reversed: true, expanding: 0.003})
+          };
+          const particles = [...Array(10)].map(() => {
+              return {
+                  render: (x, y) => {
+                      p5.fill(255);
+                      p5.noStroke();
+                      p5.circle(x, y, 10);
+                  },
+                  track: getNewWave(),
+              }
+          });
+
+          p5.setup = () => {
+              p5.createCanvas(width, height);
+          }
+
+          p5.draw = () => {
+              p5.background(0, 97);
+              p5.translate(width / 2, height)
+              for (const particle of particles) {
+                  if (p5.random(1, 4) < 2) {
+                      particle.track.trace(particle.render, width, 100)
+                  }
+              }
+          }
+      }, document.querySelector('main'));
+  </script>
+</head>
+
+<body style="margin: 0; padding: 0;">
+  <main></main>
+</body>
+
+</html>
