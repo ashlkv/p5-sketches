@@ -10,9 +10,14 @@ function Wave(p5, amplitude, wavelength, phase = 0) {
     this.wavelength = wavelength;
     this.startingPhase = phase;
     this.index = 0;
+    this.addedWaves = [];
 
     this.getY = (x, phase = 0) => {
-        return p5.sin(this.startingPhase + phase + p5.PI * 2 * x / this.wavelength) * this.amplitude;
+        let y = p5.sin(this.startingPhase + phase + p5.PI * 2 * x / this.wavelength) * this.amplitude;
+        for (const wave of this.addedWaves) {
+            y += wave.getY(x, phase);
+        }
+        return y;
     }
 
     this.scroll = (renderPoint = (x, y) => {}, density, phase) => {
@@ -38,5 +43,16 @@ function Wave(p5, amplitude, wavelength, phase = 0) {
             const x = p5.map(index, 0, this.angles.length - 1, 0, this.wavelength * waveCount)
             renderPoint(x, y);
         })
+    }
+
+    this.add = (wave) => {
+        this.addedWaves.push(wave);
+    }
+
+    this.draw = (renderPoint = (x, y) => {}, width) => {
+        for (let x = 0; x < width; x += 10) {
+            const y = this.getY(x);
+            renderPoint(x, y);
+        }
     }
 }
