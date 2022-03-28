@@ -1,0 +1,13 @@
+<svg width="120" height="120" viewBox="0 0 120 120"
+     xmlns="http://www.w3.org/2000/svg">
+
+  <rect x="10" y="10" width="80" height="80" fill="#000">
+    <animateTransform attributeName="transform"
+                              attributeType="XML"
+                              type="rotate"
+                              from="0 60 60"
+                              to="360 60 60"
+                              dur="10s"
+                              repeatCount="indefinite"/>
+  </rect>
+</svg>
