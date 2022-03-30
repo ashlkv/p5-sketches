@@ -1,23 +1,23 @@
 window.P5 = p5;
 
 new p5((p5) => {
-    const width = 600;
-    const height = 600;
-    const particleLimit = 20;
-    const particleChance = 1 / 50;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const particleLimit = 300;
+    const particleChance = 1 / 20;
 
     let images = [];
     let particles = [];
 
     const getNewWave = () => {
-        const amplitude = p5.random(20, 30);
-        const wavelength = p5.random(width / 2, width);
+        const amplitude = p5.random(20, 70);
+        const wavelength = p5.random(width / 4, width / 1.5);
         const phase = p5.TWO_PI / p5.random(0, 1);
         return new Wave(p5, amplitude, wavelength, phase, {vertical: true, expanding: 0.003})
     };
     const getParticle = () => {
         const offset = p5.random(-width / 2, width / 2);
-        const diameter = p5.random(20, 36)
+        const diameter = p5.random(12, 72)
         const startingAngle = p5.random(0, p5.TWO_PI)
         const rotateSpeed = p5.random(0.02, 0.05);
         const imageIndex = Math.round(p5.random(0, images.length - 1));
@@ -37,7 +37,8 @@ new p5((p5) => {
                 count++;
             },
             track: getNewWave(),
-            speed: Math.round(p5.random(500, 600)),
+            // speed: Math.round(p5.random(300, 600)), // Random speed
+            speed: Math.round(p5.map(diameter, 12, 72, 300, 800)), // The smaller, the heavier
         }
     }
 
