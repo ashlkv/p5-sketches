@@ -1,14 +1,16 @@
 window.P5 = p5;
 
 new p5((p5) => {
-    const particleCount = 100;
+    const particleCount = 300;
     const noiseIncrement = 0.1;
-    const cellSize = 10;
-    const canvasWidth = 200;
-    const canvasHeight = 200;
+    const cellSize = 20;
+    const canvasWidth = Math.floor(window.innerWidth / cellSize) * cellSize;
+    const canvasHeight = Math.floor(window.innerHeight / cellSize) * cellSize;
     let time = 0;
     let flowField = [];
     let particles = [];
+
+    // p5.frameRate(200);
 
     p5.setup = () => {
         p5.createCanvas(canvasWidth, canvasHeight);

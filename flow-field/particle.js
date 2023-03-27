@@ -33,8 +33,8 @@ function Particle(p5, {canvasWidth, canvasHeight, cellSize}) {
     }
 
     this.follow = (flowField) => {
-        const column = Math.min(Math.floor(this.position.x / cellSize), flowField.length - 1);
-        const row = Math.min(Math.floor(this.position.y / cellSize), flowField[0].length - 1);
+        const row = Math.min(Math.floor(this.position.x / cellSize), flowField.length - 1);
+        const column = Math.min(Math.floor(this.position.y / cellSize), flowField[0].length - 1);
         this.applyForce(flowField[row][column].vector);
     }
 
