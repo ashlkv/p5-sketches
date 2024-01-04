@@ -6,17 +6,20 @@ new p5((p5) => {
     const pixelDensity = p5.pixelDensity();
     const intrinsicWidth = 400;
     const intrinsicHeight = 400;
+    const intrinsicDepth = 400;
     const width = intrinsicWidth * pixelDensity;
     const height = intrinsicHeight * pixelDensity;
+    const depth = intrinsicHeight * pixelDensity;
     const levelCount = 4; // 4 is red, green, blue and alpha
     const featurePoints = Array(25);
 
     p5.setup = () => {
         p5.createCanvas(intrinsicWidth, intrinsicHeight);
         p5.background(255);
-        p5.frameRate(1);
+        p5.frameRate(2);
         for (let i = 0; i < featurePoints.length; i++) {
-            featurePoints[i] = new P5.Vector(p5.random(intrinsicWidth), p5.random(intrinsicHeight))
+            const [x, y, z] = [p5.random(intrinsicWidth), p5.random(intrinsicHeight), p5.random(intrinsicDepth)]
+            featurePoints[i] = new P5.Vector(x, y, z)
         }
     }
 
@@ -28,7 +31,8 @@ new p5((p5) => {
                 const distances = Array(featurePoints.length)
                 for (let i = 0; i < featurePoints.length; i++) {
                     const point = featurePoints[i];
-                    distances[i] = p5.dist(x, y, point.x * pixelDensity, point.y * pixelDensity)
+                    const z = p5.frameCount % width;
+                    distances[i] = p5.dist(x, y, z, point.x * pixelDensity, point.y * pixelDensity, point.z * pixelDensity)
                 }
                 // Sorting moves the shortest distance to the beginning of the array
                 const shortestDistances = p5.sort(distances)
@@ -50,7 +54,7 @@ new p5((p5) => {
             p5.stroke(0, 255, 0)
             p5.point(point.x, point.y)
         }*/
-        p5.noLoop();
+        // p5.noLoop();
     }
 }, document.querySelector('main'))
 
