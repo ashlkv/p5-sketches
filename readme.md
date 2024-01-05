@@ -7,6 +7,9 @@
 - [Animated perlin noise loop](./perlin-noise/noise-loop.html)
 - [Animated worley noise](./worley-noise/worley-noise.html)
 
+### Forces
+- [Gravitational or mutual attraction](./attractors/attractors.html)
+
 ### Other
 - [Metaballs or blobs](./metaballs/metaballs.html)
 
