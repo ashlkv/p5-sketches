@@ -9,6 +9,7 @@
 
 ### Forces
 - [Gravitational or mutual attraction](./attractors/attractors.html)
+- [Attractors with lines](./attractors/attractor-lines.html)
 
 ### Other
 - [Metaballs or blobs](./metaballs/metaballs.html)
