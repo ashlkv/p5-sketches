@@ -20,7 +20,7 @@ new p5((p5) => {
     const canvasHeight = window.innerHeight;
     
     const ruleset = getRuleset()
-    const firstGeneration = CellularAutomata.getFirstGeneration(canvasWidth);
+    const firstGeneration = CellularAutomata.getGenerationWithCenterPoint(canvasWidth);
     
     const automata = new CellularAutomata(p5, canvasWidth, canvasHeight, firstGeneration, ruleset)
     

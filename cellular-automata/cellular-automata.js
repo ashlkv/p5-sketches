@@ -4,7 +4,7 @@ const defaultCellCalculator = (ruleset, left, middle, right) => {
     return ruleset[index];
 }
 
-function CellularAutomata(p5, width, height, firstGeneration, ruleset, getNewCell = defaultCellCalculator, renderPoint) {
+function CellularAutomata(p5, width, height, firstGeneration, ruleset, getNewCell = defaultCellCalculator, renderPoint = undefined) {
     const defaultPointRenderer = (x, y, value) => {
         p5.stroke(value ? 0 : 255);
         p5.point(x, y);
@@ -45,7 +45,8 @@ function CellularAutomata(p5, width, height, firstGeneration, ruleset, getNewCel
     }
 }
 
-CellularAutomata.getFirstGeneration = (size) => {
+/** Returns a default first generation with a point in center */
+CellularAutomata.getGenerationWithCenterPoint = (size) => {
     const generation = Array(size).fill(0)
     generation[Math.floor(size / 2)] = 1
     return generation;
