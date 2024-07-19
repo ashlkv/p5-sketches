@@ -2,7 +2,7 @@ window.P5 = p5;
 
 function FlowLine(p5, {column, row, noiseIncrement, cellSize, visible = false}) {
     this.angle;
-    this.radius = p5.noise(column * noiseIncrement, row * noiseIncrement,) * 200;
+    this.radius = 20;
     this.vector;
     this.oppositeVector;
     this.anchor = { x: column * cellSize, y: row * cellSize }
@@ -21,6 +21,16 @@ function FlowLine(p5, {column, row, noiseIncrement, cellSize, visible = false}) 
     }
 
     this.update()
+}
+
+function FlowBezier(p5, { anchor1, vector1, anchor2, vector2, visible = false }) {
+    const control1 = { x: anchor1.x + vector1.x, y: anchor1.y + vector1.y }
+    const control2 = { x: anchor2.x + vector2.x, y: anchor2.y + vector2.y };
+    if (visible) {
+        p5.strokeWeight(1)
+        p5.stroke(0, 150);
+        p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
+    }
 }
 
 // FIXME There are probably built-in p5 methods
@@ -46,17 +56,19 @@ new p5((p5) => {
     p5.setup = () => {
         p5.frameRate(5)
         p5.createCanvas(canvasWidth, canvasHeight);
-        Array(canvasHeight / cellSize).fill()
-            .forEach((value, row) => Array(canvasWidth / cellSize).fill()
-                .forEach((value, column) => {
-                    p5.strokeWeight(3)
-                    p5.stroke(0, 100);
-                    p5.point(column * cellSize, row * cellSize)
-                }));
+        
+        // Grid of dots
+        // Array(canvasHeight / cellSize).fill()
+        //     .forEach((value, row) => Array(canvasWidth / cellSize).fill()
+        //         .forEach((value, column) => {
+        //             p5.strokeWeight(3)
+        //             p5.stroke(0, 100);
+        //             p5.point(column * cellSize, row * cellSize)
+        //         }));
         
         flowField = Array(canvasHeight / cellSize).fill()
             .map((value, row) => Array(canvasWidth / cellSize).fill()
-                .map((value, column) => new FlowLine(p5,{column, row, noiseIncrement, cellSize, visible: true})));
+                .map((value, column) => new FlowLine(p5,{column, row, noiseIncrement, cellSize, visible: false})));
     }
     
 
@@ -67,15 +79,7 @@ new p5((p5) => {
                     return;
                 }
                 const flowLine1 = flowLines[column - 1]
-                p5.strokeWeight(1)
-                p5.stroke(0, 255);
-                const vector1 = flowLine1.oppositeVector;
-                const vector2 = flowLine2.vector;
-                const anchor1 = flowLine1.anchor
-                const control1 = { x: anchor1.x + vector1.x, y: anchor1.y + vector1.y }
-                const anchor2 = flowLine2.anchor
-                const control2 = { x: anchor2.x + vector2.x, y: anchor2.y + vector2.y }
-                p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
+                new FlowBezier(p5, {anchor1: flowLine1.anchor, vector1: flowLine1.oppositeVector, anchor2: flowLine2.anchor, vector2: flowLine2.vector, visible: true })
             })
         })
         p5.noLoop();
