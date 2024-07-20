@@ -2,85 +2,96 @@ window.P5 = p5;
 
 function FlowLine(p5, {column, row, noiseIncrement, cellSize, visible = false}) {
     this.angle;
-    this.radius = 20;
+    this.radius = cellSize / 2;
     this.vector;
     this.oppositeVector;
     this.anchor = { x: column * cellSize, y: row * cellSize }
     
     this.update = (time = undefined) => {
-        this.angle = p5.noise(column * noiseIncrement, row * noiseIncrement, time) * p5.TWO_PI;
+        // Using PI will make the field less wavy
+        this.angle = p5.noise(column * noiseIncrement, row * noiseIncrement, time) * p5.TWO_PI * 2;
         this.vector = P5.Vector.fromAngle(this.angle, this.radius)
         this.oppositeVector = P5.Vector.fromAngle(this.angle + p5.PI, this.radius);
         if (visible) {
             const { x: x1, y: y1 } = this.anchor;
             const { x: x2, y: y2 } = { x: this.anchor.x + this.vector.x, y: this.anchor.y + this.vector.y }
             p5.strokeWeight(1)
-            p5.stroke(0, 50);
+            p5.stroke(0, 100);
             p5.line(x1, y1, x2, y2)
+            
+            // Dot at the end
+            p5.strokeWeight(3)
+            p5.stroke(0, 100);
+            p5.point(x2, y2)
         }
     }
 
     this.update()
 }
 
-function FlowBezier(p5, { anchor1, vector1, anchor2, vector2, visible = false }) {
-    const control1 = { x: anchor1.x + vector1.x, y: anchor1.y + vector1.y }
-    const control2 = { x: anchor2.x + vector2.x, y: anchor2.y + vector2.y };
-    if (visible) {
-        p5.strokeWeight(1)
-        p5.stroke(0, 150);
-        p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
+function FlowField(p5, { width, height, noiseIncrement, cellSize }) {
+    this.width = width;
+    this.height = height
+    this.lines = Array(height).fill()
+                    .map((value, row) => Array(width).fill()
+                        .map((value, column) => new FlowLine(p5,{column, row, noiseIncrement, cellSize, visible: true})))
+    
+    /** Gets closest vector to the point specified in pixels */
+    this.getVectorAt = ({x, y}) => {
+        const column = Math.min(Math.max(Math.round(x / cellSize), 0), width - 1);
+        const row = Math.min(Math.max(Math.round(y / cellSize), 0), height - 1);
+        return this.lines[row][column].vector
     }
 }
 
-// FIXME There are probably built-in p5 methods
-const cartesianToPolar = (point = { x, y }) => {
-  const radius = Math.sqrt(Math.pow(point.x, 2) + Math.pow(point.y, 2));
-  const degrees = (Math.atan2(point.y, point.x) * 180) / Math.PI;
-  return { radius, degrees };
-};
-
-const polarToCartesian = (vector = { radius, degrees }) => {
-  const radians = (vector.degrees * Math.PI) / 180.0;
-  return { x: vector.radius * Math.cos(radians), y: vector.radius * Math.sin(radians) };
-};
+function Curve(p5, { flowField, start, steps, step = 10 }) {
+    this.vertices = [start];
+    for (let i = 0; i < steps; i++) {
+        const point = this.vertices[i];
+        const vector = p5.createVector(point.x, point.y);
+        const force = flowField.getVectorAt(point);
+        force.setMag(step);
+        vector.add(force)
+        this.vertices.push({x: vector.x, y: vector.y})
+    }
+}
 
 new p5((p5) => {
-    const cellSize = 20;
-    const noiseIncrement = 0.1;
-    const canvasWidth = Math.floor(400 / cellSize) * cellSize;
-    const canvasHeight = Math.floor(400 / cellSize) * cellSize;
+    const cellSize = 15;
+    const noiseIncrement = 0.01;
+    const canvasSize = { width: Math.floor(window.innerWidth / cellSize) * cellSize, height: Math.floor(window.innerHeight / cellSize) * cellSize }
     let time = 0;
-    let flowField = [];
+    let flowField;
 
     p5.setup = () => {
         p5.frameRate(5)
-        p5.createCanvas(canvasWidth, canvasHeight);
+        p5.createCanvas(canvasSize.width, canvasSize.height);
         
-        // Grid of dots
-        // Array(canvasHeight / cellSize).fill()
-        //     .forEach((value, row) => Array(canvasWidth / cellSize).fill()
-        //         .forEach((value, column) => {
-        //             p5.strokeWeight(3)
-        //             p5.stroke(0, 100);
-        //             p5.point(column * cellSize, row * cellSize)
-        //         }));
-        
-        flowField = Array(canvasHeight / cellSize).fill()
-            .map((value, row) => Array(canvasWidth / cellSize).fill()
-                .map((value, column) => new FlowLine(p5,{column, row, noiseIncrement, cellSize, visible: false})));
+        flowField = new FlowField(p5, {width: canvasSize.width / cellSize, height: canvasSize.height / cellSize, noiseIncrement, cellSize})
+        window.flowField = flowField
     }
-    
 
     p5.draw = () => {
-        flowField.forEach((flowLines, row) => {
-            flowLines.forEach((flowLine2, column) => {
-                if (column === 0) {
-                    return;
-                }
-                const flowLine1 = flowLines[column - 1]
-                new FlowBezier(p5, {anchor1: flowLine1.anchor, vector1: flowLine1.oppositeVector, anchor2: flowLine2.anchor, vector2: flowLine2.vector, visible: true })
-            })
+        const start = { x: 315, y: 37 }
+        const curve = new Curve(p5, { start, steps: 100, flowField, step: 50 })
+        
+        p5.strokeWeight(3)
+        p5.stroke(255, 0, 0, 100);
+        p5.fill(0, 0)
+        p5.beginShape();
+        
+        const {x, y} = curve.vertices[0];
+        // Somehow it's necessary to repeat the start point twice for the curve
+        p5.curveVertex(x, y);
+        curve.vertices.forEach(({x, y}) => {
+            p5.curveVertex(x, y);
+        })
+        p5.endShape();
+        
+        p5.strokeWeight(3)
+        p5.stroke(255, 0, 0, 255);
+        curve.vertices.forEach(({x, y}) => {
+            p5.point(x, y)
         })
         p5.noLoop();
     }
