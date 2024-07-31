@@ -68,10 +68,11 @@ new p5((p5) => {
     const canvasSize = { width: Math.floor(window.innerWidth / cellSize) * cellSize, height: Math.floor(window.innerHeight / cellSize) * cellSize }
     let time = 0;
     let flowField;
+    let canvas;
 
     p5.setup = () => {
         p5.frameRate(5)
-        p5.createCanvas(canvasSize.width, canvasSize.height, p5.SVG);
+        canvas = p5.createCanvas(canvasSize.width, canvasSize.height, p5.SVG);
         
         flowField = new FlowField(p5, {width: canvasSize.width / cellSize, height: canvasSize.height / cellSize, noiseIncrement, cellSize, visible: true})
         window.flowField = flowField
