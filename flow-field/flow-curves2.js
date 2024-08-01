@@ -1,5 +1,8 @@
 window.P5 = p5;
 
+import {Vector} from "./modules/vector.js";
+import {Curve} from "./modules/curve.js";
+
 const range = (start, end) => {
     const isEndDef = typeof end !== 'undefined'
     end = isEndDef ? end : start
@@ -16,6 +19,45 @@ const range = (start, end) => {
         {current: start, result: []}
     )
     return result
+}
+
+const sample = function(count, width, height) {
+  let distance = width / Math.sqrt((count * height) / width);
+  let sampling = new PoissonDiskSampling({
+    shape: [width, height],
+    minDistance: distance * 0.8,
+    maxDistance: distance * 1.6,
+    tries: 15
+  });
+  return sampling.fill().map(([x, y]) => ({x, y}));
+}
+
+function fieldCurve(field, x, y, stepLength, numSteps) {
+  let p = new Vector(x, y);
+  let q = new Vector(x, y);
+  let n = numSteps >> 1;
+  let curve = new Curve(p);
+  while (--n > 0) {
+    let angle = field.getCell(p.x, p.y);
+    if (angle === undefined) {
+        break;
+    }
+    let v = new Vector(1, 0).rotate(angle).scale(stepLength);
+    p = p.add(v);
+    curve.push(p);
+  }
+  curve = curve.reverse();
+  n = numSteps - (numSteps >> 1);
+  while (--n > 0) {
+    let angle = field.getCell(q.x, q.y);
+        if (angle === undefined) {
+          break;
+      }
+    let v = new Vector(-1, 0).rotate(angle).scale(stepLength);
+    q = q.add(v);
+    curve.push(q);
+  }
+  return curve;
 }
 
 function FlowLine(p5, {column, row, angle, radius, cellSize}) {
@@ -47,7 +89,9 @@ function Grid(width, height, cellSize) {
     this.grid = range(this.nx)
         .map((ix) => range(this.ny).map((iy) => defaultAngle));
     
-    this.getCell = (column, row) => {
+    this.getCell = (floatingColumn, floatingRow) => {
+        const row = Math.round(floatingRow)
+        const column = Math.round(floatingColumn)
         if (column < 0 || row < 0 || column > this.nx - 1 || row > this.ny - 1) {
             return undefined;
         }
@@ -103,7 +147,7 @@ function FlowField(p5,
   return grid;
 }
 
-function Curve(p5, { flowField, start, steps, step = 10 }) {
+/*function Curve(p5, { flowField, start, steps, step = 10 }) {
     this.vertices = [start];
     for (let i = 0; i < steps; i++) {
         const point = this.vertices[i];
@@ -116,7 +160,7 @@ function Curve(p5, { flowField, start, steps, step = 10 }) {
         vector.add(force)
         this.vertices.push({x: vector.x, y: vector.y})
     }
-}
+}*/
 
 new p5((p5) => {
     const cellSize = 10;
@@ -126,12 +170,13 @@ new p5((p5) => {
     // const canvasSize = { width: 300, height: 200 }
     let time = 0;
     let flowField;
-    let canvas;
+    let context;
     const seeds = [Math.random(), Math.random()]
 
     p5.setup = () => {
         p5.frameRate(5)
-        canvas = p5.createCanvas(canvasSize.width, canvasSize.height, p5.SVG);
+        const p5canvas = p5.createCanvas(canvasSize.width, canvasSize.height, p5.SVG);
+        context = p5canvas.canvas.getContext('2d');
         
         flowField = new FlowField(p5, {width: canvasSize.width, height: canvasSize.height, noiseOffset: 1, noiseScale: 1.4, noiseOctaves: 2, cellSize, angleScale: 10, seeds})
         window.flowField = flowField
@@ -142,27 +187,24 @@ new p5((p5) => {
           for (let j = 0; j < flowField.ny; j++) {
               const angle = flowField.getCell(i, j);
               const line = new FlowLine(p5, { column: i, row: j, angle, radius: cellSize * 0.8, cellSize })
-              // line.render();
+              line.render();
           }
         }
-        
-        Array(2000).fill().forEach((element, index) => {
-            const start = {
-                x: p5.random(canvasSize.width),
-                y: p5.random(canvasSize.height)
-            }
-            const curve = new Curve(p5, { start, steps: 7, flowField, step: 30 })
-            
+        const startingPoints = sample(100, canvasSize.width, canvasSize.height);
+        startingPoints.forEach((start, index) => {
+            // const curve = new Curve(p5, { start, steps: 7, flowField, step: 30 })
+            const curve = fieldCurve(flowField, start.x, start.y, 2, 100)
             p5.strokeWeight(1)
-            p5.stroke(0, 0, 0, 100);
+            p5.stroke(0, 0, 0, 255);
             p5.fill(0, 0)
             p5.beginShape();
             
-            const {x, y} = curve.vertices[0];
-            // Somehow it's necessary to repeat the start point twice for the curve
-            p5.curveVertex(x, y);
-            curve.vertices.forEach(({x, y}) => {
+            curve.forEach(({x, y}, index) => {
                 p5.curveVertex(x, y);
+                if (index === 0 || index === curve.length - 1) {
+                    // First and last vertices are curve control points, so we are repeating them to get anchor points.
+                    p5.curveVertex(x, y);
+                }
             })
             p5.endShape();
             
