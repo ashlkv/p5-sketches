@@ -3,9 +3,14 @@
 window.P5 = p5;
 
 new p5((p5) => {
-    const getRuleset = (ruleNumber = 777) => {
-        const radix = 3
-        return ((ruleNumber ?? p5.random(0, 255)) >>> 0)
+    const colors = [[255, 0, 0], [0, 255, 0], [0, 0, 255]]
+    const values = new Set();
+    
+    const getRuleset = (defaultRuleNumber) => {
+        const radix = colors.length
+        const ruleNumber = (defaultRuleNumber ?? Math.round(p5.random(0, 1635)));
+        console.log('ruleNumber', ruleNumber)
+        return (ruleNumber >>> 0)
             .toString(radix)
             .padStart(7, '0')
             .split('')
@@ -22,7 +27,10 @@ new p5((p5) => {
     }
     
     const renderPoint = (x, y, value) => {
-        p5.stroke(value === 1 ? 100 : value === 2 ? 0 : 255);
+        values.add(value)
+        const index = value === undefined ? -1 : value
+        const color = index === -1 ? [255, 255, 255] : colors[index]
+        p5.stroke(...color);
         p5.strokeWeight(2)
         p5.point(x, y);
     }
@@ -32,7 +40,7 @@ new p5((p5) => {
     const canvasWidth = window.innerWidth % 2 === 0 ? window.innerWidth - 1 : window.innerWidth;
     const canvasHeight = window.innerHeight;
     
-    const ruleset = getRuleset(1635);
+    const ruleset = getRuleset();
     const firstGeneration = CellularAutomata.getGenerationWithCenterPoint(canvasWidth);
     
     const automata = new CellularAutomata(p5, canvasWidth, canvasHeight, firstGeneration, ruleset, getNewCell, renderPoint)
@@ -40,12 +48,14 @@ new p5((p5) => {
     p5.setup = () => {
         p5.createCanvas(canvasWidth, canvasHeight);
         p5.background(255);
-        // p5.frameRate(15)
+        p5.frameRate(30)
     };
     
     p5.draw = () => {
         automata.renderGeneration();
     };
+    
+    window.values = values
 }, document.querySelector('main'))
 
 
