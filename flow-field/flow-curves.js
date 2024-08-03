@@ -93,8 +93,9 @@ function Curve(p5, { flowField, start, steps, step = 10 }) {
 
 new p5((p5) => {
     const cellSize = 20;
-    const noiseIncrement = 0.009;
-    const canvasSize = { width: Math.floor(window.innerWidth / cellSize) * cellSize, height: Math.floor(window.innerHeight / cellSize) * cellSize }
+    const noiseIncrement = 0.05;
+    // const canvasSize = { width: Math.floor(window.innerWidth / cellSize) * cellSize, height: Math.floor(window.innerHeight / cellSize) * cellSize }
+    const canvasSize = { width: Math.floor(640 / cellSize) * cellSize, height: Math.floor(480 / cellSize) * cellSize }
     let flowField;
     window.save = (name) => p5.save(name)
 
@@ -114,7 +115,7 @@ new p5((p5) => {
         const startingPoints = sample(2000, canvasSize.width, canvasSize.height);
         // const startingPoints = [{x: Math.round(p5.random(canvasSize.width)), y: Math.round(p5.random(canvasSize.height))}];
         startingPoints.forEach((start) => {
-            const curve = new Curve(p5, { start, steps: 10, flowField, step: cellSize - 5 })
+            const curve = new Curve(p5, { start, steps: 30, flowField, step: cellSize * 5 })
             p5.strokeWeight(1)
             // p5.stroke(244, 85, 49, 100);
             p5.stroke(0, 0, 0, 100);
