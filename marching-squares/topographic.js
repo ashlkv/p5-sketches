@@ -1,4 +1,4 @@
-import { draw_line, draw_poly } from './display.js';
+import { drawLine, drawPoly } from './display.js';
 
 function getNoise(count, column, row, simplex, noisePersistance = 0.55, noiseScale = 350, noiseIntensity = 9) {
     let noise = 0;
@@ -24,7 +24,7 @@ function getNoise(count, column, row, simplex, noisePersistance = 0.55, noiseSca
     }
   }
 
-function Grid(canvasSize = { width: 640, height: 480 }, cellSize = 2, initializeValue = (column, row) => {}) {
+function Grid(p5, { canvasSize = { width: 640, height: 480 }, cellSize = 2, initializeValue = (column, row) => {}}) {
   this.cellSize = cellSize;
   this.columns = Math.floor(canvasSize.width / cellSize);
   this.rows = Math.floor(canvasSize.height / cellSize);
@@ -33,6 +33,14 @@ function Grid(canvasSize = { width: 640, height: 480 }, cellSize = 2, initialize
                       .map((value, column) => initializeValue(column, row)))
   this.getValue = (column, row) => {
     return this.values[row][column];
+  }
+  this.render = () => {
+    this.values.forEach((columns, row) => columns.forEach((value, column) => {
+      const color = p5.map(value, -1, 0, 0, 255)
+      p5.strokeWeight(3)
+      p5.stroke(color)
+      p5.point(column * cellSize, row * cellSize)
+    }))
   }
 }
 
@@ -46,7 +54,9 @@ new p5((p5) => {
     stroke_weight: 1,
     line_density: 15,
     range: 0.5,
+    cellSize: 10,
   };
+  const maxWeights = {nw: 8, ne: 4, se: 2, sw: 1}
   
   const canvasSize = { width: window.innerWidth, height: window.innerHeight }
   let grid
@@ -59,30 +69,37 @@ new p5((p5) => {
     const simplex = new SimplexNoise(seed);
     p5.randomSeed(seed);
     const initializeValue = (column, row) => getNoise(16, column, row, simplex, options.noise_persistence, options.noise_scale, options.noise_intensity)
-    grid = new Grid(canvasSize, 2, initializeValue);
+    grid = new Grid(p5, { canvasSize, cellSize: options.cellSize, initializeValue });
   };
   
   p5.draw = () => {
     const ratio = options.range * 2;
-    const number_of_lines = ratio * options.line_density;
+    const lineCount = ratio * options.line_density;
   
     p5.push();
     p5.background(options.bg_color);
+    // Render "sea"
     render(-1 + ratio, 1, 2 - ratio, [options.color]);
-    render(-1, number_of_lines, 1 / options.line_density, []);
+    // Render lines
+    render(-1, lineCount, 1 / options.line_density, []);
     p5.pop();
     p5.noise();
+    p5.noLoop()
   }
 
   function render(initialThreshold, steps, delta, colors) {
     const thresholds = getThresholds(initialThreshold, steps, delta, colors);
     const filled = colors.length !== 0;
+    let counter = 0;
 
+    grid.render();
+    
     p5.push();
     for (let y = 0; y < grid.rows; y++) {
       p5.push();
       for (let x = 0; x < grid.columns; x++) {
-        renderCell(x, y, filled, thresholds, delta);
+        counter ++;
+        renderCell(x, y, filled, thresholds, delta, counter);
         p5.translate(grid.cellSize, 0);
       }
       p5.pop();
@@ -92,28 +109,26 @@ new p5((p5) => {
   }
 
   function renderCell(x, y, filled, allThresholds, delta) {
-    const values = { nw: grid.getValue(x, y), ne: grid.getValue(x + 1, y), se: grid.getValue(x + 1, y + 1), sw: grid.getValue(x, y + 1) }
-    const min = p5.min(Object.values(values));
-    const max = p5.max(Object.values(values));
-    const thresholds = allThresholds.filter((t) => t.value >= min - delta && t.value <= max);
+    const square = { nw: grid.getValue(x, y), ne: grid.getValue(x + 1, y), se: grid.getValue(x + 1, y + 1), sw: grid.getValue(x, y + 1) }
+    const min = p5.min(Object.values(square));
+    const max = p5.max(Object.values(square));
+    const thresholdIndices = allThresholds
+        .map((threshold, index) => threshold.value >= min - delta && threshold.value <= max ? index : -1)
+        .filter(index => index !== -1);
 
-    for (const threshold of thresholds) {
-      const borders = {
-        nw: values.nw > threshold.value ? 8 : 0,
-        ne: values.ne > threshold.value ? 4 : 0,
-        se: values.se > threshold.value ? 2 : 0,
-        sw: values.sw > threshold.value ? 1 : 0
-      }
-
-      const number = Object.values(borders).reduce((sum, value) => sum + value, 0);
+    for (const index of thresholdIndices) {
+      const threshold = allThresholds[index];
+      const direction = Object.entries(square).reduce((sum, [key, value]) => {
+        return value > threshold.value ? sum + maxWeights[key] : sum;
+      }, 0);
 
       if (filled) {
         p5.fill(threshold.color);
-        draw_poly(p5, number, ...Object.values(values), threshold.value, grid.cellSize);
+        drawPoly(p5, direction, ...Object.values(square), threshold.value, grid.cellSize);
       } else {
-        p5.stroke('#000');
+        p5.stroke(p5.map(index, 0, allThresholds.length - 1, 0, 250));
         p5.strokeWeight(options.stroke_weight);
-        draw_line(p5, number, ...Object.values(values), threshold.value, grid.cellSize);
+        drawLine(p5, direction, ...Object.values(square), threshold.value, grid.cellSize);
       }
     }
   }

@@ -1,4 +1,4 @@
-export function draw_line(p, id, nw, ne, se, sw, threshold, dim) {
+export function drawLine(p, id, nw, ne, se, sw, threshold, dim) {
   const n = [p.map(threshold, nw, ne, 0, dim), 0];
   const e = [dim, p.map(threshold, ne, se, 0, dim)];
   const s = [p.map(threshold, sw, se, 0, dim), dim];
@@ -16,7 +16,7 @@ export function draw_line(p, id, nw, ne, se, sw, threshold, dim) {
   }
 }
 
-export function draw_poly(p, id, v1, v2, v3, v4, threshold, dim) {
+export function drawPoly(p, id, v1, v2, v3, v4, threshold, dim) {
   const n = [p.map(threshold, v1, v2, 0, dim), 0];
   const e = [dim, p.map(threshold, v2, v3, 0, dim)];
   const s = [p.map(threshold, v4, v3, 0, dim), dim];
