@@ -1,8 +1,8 @@
 window.P5 = p5;
 
 new p5((p5) => {
-    const width = 600;
-    const height = 600;
+    const width = 900;
+    const height = 900;
     let phase = 0;
     let slider;
 
@@ -13,22 +13,22 @@ new p5((p5) => {
     }
 
     p5.draw = () => {
-        p5.background(0);
+        p5.background(255);
         p5.translate(width / 2, height / 2)
-        p5.stroke(255)
-        p5.noFill();
+        p5.stroke(0)
+        p5.fill(0);
         p5.beginShape();
         // p5.noiseSeed(p5.frameCount)
         const noiseMax = slider.value();
-        for (let angle = 0; angle < p5.PI * 2; angle += 0.1) {
+        for (let angle = 0; angle < p5.PI * 2; angle += 0.01) {
             const xOffset = p5.map(p5.cos(angle + phase), -1, 1, 0, noiseMax);
             const yOffset = p5.map(p5.sin(angle + phase), -1, 1, 0, noiseMax);
-            const radius = p5.map(p5.noise(xOffset, yOffset), 0, 1, 100, 200);
+            const radius = p5.map(p5.noise(xOffset, yOffset), 0, 1, 150, 300);
             const x = p5.cos(angle) * radius;
             const y = p5.sin(angle) * radius;
             p5.vertex(x, y);
         }
         p5.endShape(p5.CLOSE);
-        phase += 0.01
+        phase += 0.001
     }
 }, document.querySelector('main'));

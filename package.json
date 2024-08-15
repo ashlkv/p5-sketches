@@ -5,7 +5,8 @@
   "license": "MIT",
   "dependencies": {
     "http-server": "^14.1.0",
-    "p5": "^1.4.0"
+    "p5": "^1.4.0",
+    "simplex-noise": "^2.4.0"
   },
   "devDependencies": {
     "vercel": "^26.x"
