@@ -185,7 +185,7 @@ new p5((p5) => {
         terrain: {noiseScale: 700, noisePersistence: 0.45, noiseIntensity: 7, strokeWeight: 1, lineDensity: 150, range: 0.99, cellSize: 10,},
         original: {noiseScale: 350, noisePersistence: 0.55, noiseIntensity: 9, strokeWeight: 1, lineDensity: 15, range: 0.5, cellSize: 2, smoothing: 0},
         large: {noiseScale: 350, noisePersistence: 0.55, noiseIntensity: 9, strokeWeight: 1, lineDensity: 15, range: 0.5, cellSize: 50,},
-        large2: {noiseScale: 350, noisePersistence: 0.4, noiseIntensity: 9, strokeWeight: 1, lineDensity: 100, range: 0.99, cellSize: 20, smoothing: 19}
+        large2: {noiseScale: 350, noisePersistence: 0.4, noiseIntensity: 9, strokeWeight: 1, lineDensity: 30, range: 0.99, cellSize: 10, smoothing: 8}
     }
     
     const options = presets.large2;
@@ -198,10 +198,16 @@ new p5((p5) => {
         p5.createCanvas(canvasSize.width, canvasSize.height, p5.SVG);
         p5.pixelDensity(4);
         
-        const seed = p5.floor(p5.random(9999999));
+        // const seed = p5.floor(p5.random(9999999));
         // const seed = 4466729;
         // const seed = 9615282;
         // const seed = 1994825;
+        // const seed = 229642;
+        // const seed = 8197469;
+        // const seed = 9948367;
+        // const seed = 64399;
+        // const seed = 2886629;
+        const seed = 8473049;
         const simplex = new SimplexNoise(seed);
         p5.randomSeed(seed);
         const initializeValue = (column, row) => getNoise(16, column, row, simplex, options.noisePersistence, options.noiseScale, options.noiseIntensity)
@@ -285,8 +291,11 @@ new p5((p5) => {
         
         // Curves
         Object.entries(levels).forEach(([level, splines]) => {
-            // p5.stroke(p5.map(level, 0, thresholds.length - 1, 0, 250));
-            p5.stroke(0);
+            if (level > 20) {
+                return;
+            }
+            p5.stroke(level > 20 ? '#00ffff' : 0);
+            // p5.stroke(0);
             p5.strokeWeight(options.strokeWeight);
             splines.forEach((spline) => {
                 p5.beginShape();
