@@ -167,7 +167,7 @@ new p5((p5) => {
         // const getNoiseValue = (column, row) => p5.noise(column * noiseIncrement, row * noiseIncrement) * p5.TWO_PI * 3
         // const getConstantValue = () => p5.PI / 2
         const getSlightNoiseValue = (column, row) => {
-            const main = p5.PI / 2;
+            const main = 0;
             const range = p5.PI / 2;
             const variation = p5.noise(column * noiseIncrement, row * noiseIncrement) * range;
             return main - range / 2 + variation
@@ -179,7 +179,7 @@ new p5((p5) => {
     const initializeRepellers = () => {
         if (controls.repellerOn.checked()) {
             // repellers = poissonSample( 10, canvasSize.width, canvasSize.height * 0.66).map(({ x, y }) => new Repeller(p5, x, canvasSize.height * 0.33 + y))
-            repellers = randomSample(p5,  25, canvasSize.width, canvasSize.height * 0.66).map(({ x, y }) => new Repeller(p5, x, canvasSize.height * 0.33 + y))
+            repellers = randomSample(p5,  25, canvasSize.width * 0.75, canvasSize.height).map(({ x, y }) => new Repeller(p5, x + canvasSize.width * 0.25, y))
             repellers.forEach((repeller) => {
                 repeller.power = p5.random(controls.repellerPower.value());
             })
@@ -235,10 +235,10 @@ new p5((p5) => {
     }
 
     p5.draw = () => {
-        p5.background(0, 0, 0)
+        p5.background(255, 255, 255)
         
-        repellers.forEach((repeller) => repeller.render())
-        flowField.render()
+        // repellers.forEach((repeller) => repeller.render())
+        // flowField.render()
         
         const count = controls.count.value()
         // const startingPoints = poissonSample(count, canvasSize.width, canvasSize.height);
@@ -246,10 +246,11 @@ new p5((p5) => {
         // const startingPoints = [{x: Math.round(p5.random(canvasSize.width)), y: Math.round(p5.random(canvasSize.height))}];
         // const startingPoints = [{x: Math.round(p5.random(canvasSize.width)), y: Math.round(p5.random(canvasSize.height))}];
         // const startingPoints = [{x: Math.round(canvasSize.width * 0.25), y: Math.round(canvasSize.height * 0.25)}];
-        const startingPoints = anchorSample(p5, count, {x: canvasSize.width / 2, y: 20}, canvasSize.width, 10);
+        // const startingPoints = anchorSample(p5, count, {x: canvasSize.width / 2, y: 20}, canvasSize.width, 10);
+        const startingPoints = anchorSample(p5, count, {x: 20, y: canvasSize.height / 2}, 10, canvasSize.height);
         
         startingPoints.forEach((start) => {
-            const curve = new Curve(p5, {start, steps: 500, flowField, repellers, step: 5, darkMode: true})
+            const curve = new Curve(p5, {start, steps: 500, flowField, repellers, step: 5, darkMode: false})
             curve.render();
             // curve.renderVertices();
             // curve.renderStartingVertex();

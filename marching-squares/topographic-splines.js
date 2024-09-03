@@ -1,3 +1,22 @@
+function getRange(start, end) {
+    return new Array(end - start).fill().map((element, index) => start + index)
+}
+
+function ColorRanges(p5, levels, colors) {
+    const numbers = Object.keys(levels).map(key => Number(key));
+    const levelCount = numbers.length;
+    const colorKeys = colors.map(entry => entry.color);
+    this.colorRanges = colors.map(({ color, range: [min, max]}, index, entries) => {
+        const start = Math.floor(levelCount * min);
+        const end = Math.floor(levelCount * max);
+        return getRange(start, index === entries.length - 1 ? levelCount : end);
+    });
+    this.getColorAtIndex = (index) => {
+        const colorIndex = this.colorRanges.findIndex(range => range.includes(index))
+        return colorKeys[colorIndex];
+    };
+}
+
 function getNoise(count, column, row, simplex, noisePersistance = 0.55, noiseScale = 350, noiseIntensity = 9) {
     let noise = 0;
     let maxAmplitude = 0;
@@ -185,18 +204,27 @@ new p5((p5) => {
         terrain: {noiseScale: 700, noisePersistence: 0.45, noiseIntensity: 7, strokeWeight: 1, lineDensity: 150, range: 0.99, cellSize: 10,},
         original: {noiseScale: 350, noisePersistence: 0.55, noiseIntensity: 9, strokeWeight: 1, lineDensity: 15, range: 0.5, cellSize: 2, smoothing: 0},
         large: {noiseScale: 350, noisePersistence: 0.55, noiseIntensity: 9, strokeWeight: 1, lineDensity: 15, range: 0.5, cellSize: 50,},
-        large2: {noiseScale: 350, noisePersistence: 0.4, noiseIntensity: 9, strokeWeight: 1, lineDensity: 30, range: 0.99, cellSize: 10, smoothing: 8}
+        large2: {noiseScale: 350, noisePersistence: 0.35, noiseIntensity: 9, strokeWeight: 1, lineDensity: 30, range: 0.99, cellSize: 10, smoothing: 8}
     }
+    const colors = [
+    {color: '#00868b', range: [0, 0.15]},
+    {color: '#40e0d0', range: [0.15, 0.4]},
+        {color: '#000000', range: [0.4, 0.7]},
+        {color: '#636b2f', range: [0.7, 1]},
+    ]
     
-    const options = presets.large2;
+    // const options = {noiseScale: 200, noisePersistence: 0.55, noiseIntensity: 5, strokeWeight: 1, lineDensity: 15, range: 0.99, cellSize: 10, smoothing: 0};
+    // const options = {noiseScale: 700, noisePersistence: 0.45, noiseIntensity: 7, strokeWeight: 1, lineDensity: 150, range: 0.99, cellSize: 10,};
+    const options = {noiseScale: 60, noisePersistence: 0.35, noiseIntensity: 5, strokeWeight: 1, lineDensity: 50, range: 1, cellSize: 6, smoothing: 3};
     const maxWeights = {nw: 8, ne: 4, se: 2, sw: 1}
     const canvasSize = {width: window.innerWidth, height: window.innerHeight}
     const levels = {};
     let grid
+    let colorRanges
     
     p5.setup = function() {
         p5.createCanvas(canvasSize.width, canvasSize.height, p5.SVG);
-        p5.pixelDensity(4);
+        // p5.pixelDensity(4);
         
         // const seed = p5.floor(p5.random(9999999));
         // const seed = 4466729;
@@ -207,9 +235,14 @@ new p5((p5) => {
         // const seed = 9948367;
         // const seed = 64399;
         // const seed = 2886629;
-        const seed = 8473049;
+        // const seed = 8473049;
+        // const seed = 8165228;
+        const seed = 5550490;
+        
+        // p5.noiseDetail(2, 0.25)
         const simplex = new SimplexNoise(seed);
         p5.randomSeed(seed);
+        p5.noiseSeed(seed);
         const initializeValue = (column, row) => getNoise(16, column, row, simplex, options.noisePersistence, options.noiseScale, options.noiseIntensity)
         grid = new Grid(p5, {canvasSize, cellSize: options.cellSize, initializeValue});
         
@@ -290,12 +323,13 @@ new p5((p5) => {
         })*/
         
         // Curves
-        Object.entries(levels).forEach(([level, splines]) => {
-            if (level > 20) {
-                return;
+        colorRanges = new ColorRanges(p5, levels, colors);
+        Object.entries(levels).forEach(([level, splines], index) => {
+            const color = colorRanges.getColorAtIndex(index)
+            if (color !== '#000000') {
+                return
             }
-            p5.stroke(level > 20 ? '#00ffff' : 0);
-            // p5.stroke(0);
+            p5.stroke(color);
             p5.strokeWeight(options.strokeWeight);
             splines.forEach((spline) => {
                 p5.beginShape();
@@ -322,6 +356,8 @@ new p5((p5) => {
         })*/
         
         p5.noLoop();
+        
+        window.colorRanges = colorRanges;
     }
     
     window.levels = levels;

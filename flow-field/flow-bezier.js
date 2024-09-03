@@ -124,6 +124,7 @@ new p5((p5) => {
         // p5.noiseDetail(2, 0.25)
         flowField = new FlowField(p5, {width: canvasSize.width / cellSize, height: canvasSize.height / cellSize, noiseIncrement, cellSize})
         window.flowField = flowField
+        window.p5 = p5;
     }
 
     p5.draw = () => {
