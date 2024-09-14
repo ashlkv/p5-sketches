@@ -1,3 +1,10 @@
+const getSlightNoiseValue = (column, row, p5) => {
+    const main = 0;
+    const range = p5.PI;
+    const variation = p5.noise(column * noiseIncrement, row * noiseIncrement) * range;
+    return main - range / 2 + variation
+}
+
 export function FlowLine(p5, {column, row, cellSize, angle}) {
     this.angle = angle;
     this.radius = cellSize / 2;
@@ -19,12 +26,12 @@ export function FlowLine(p5, {column, row, cellSize, angle}) {
     }
 }
 
-export function FlowField(p5, { width, height, cellSize, initialize = (column, row) => {} }) {
+export function FlowField(p5, { width, height, cellSize = 20, initialize = getSlightNoiseValue }) {
     this.width = width;
     this.height = height
     this.values = Array(height).fill()
                     .map((value, row) => Array(width).fill()
-                        .map((value, column) => initialize(column, row)))
+                        .map((value, column) => initialize(column, row, p5)))
     const cellDiagonal = p5.dist(0, 0, cellSize, cellSize);
     
     const isInBounds = ({ column, row }, {width, height}) => {

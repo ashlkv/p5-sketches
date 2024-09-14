@@ -13,14 +13,14 @@ new p5((p5) => {
     }
 
     p5.draw = () => {
-        p5.background(0);
+        p5.background(255);
         p5.translate(width / 2, height / 2)
-        p5.stroke(255)
-        p5.noFill();
+        p5.stroke(0)
+        p5.fill(0);
         p5.beginShape();
         // p5.noiseSeed(p5.frameCount)
         const noiseMax = slider.value();
-        for (let angle = 0; angle < p5.PI * 2; angle += 0.1) {
+        for (let angle = 0; angle < p5.PI * 2; angle += 0.03) {
             const xOffset = p5.map(p5.cos(angle + phase), -1, 1, 0, noiseMax);
             const yOffset = p5.map(p5.sin(angle + phase), -1, 1, 0, noiseMax);
             const radius = p5.map(p5.noise(xOffset, yOffset), 0, 1, 100, 200);

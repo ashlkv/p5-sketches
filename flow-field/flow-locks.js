@@ -1,6 +1,6 @@
 window.P5 = p5;
 
-const sample = function(count, width, height) {
+const poissonSample = function(count, width, height) {
   let distance = width / Math.sqrt((count * height) / width);
   let sampling = new PoissonDiskSampling({
     shape: [width, height],
@@ -9,6 +9,10 @@ const sample = function(count, width, height) {
     tries: 15
   });
   return sampling.fill().map(([x, y]) => ({x, y}));
+}
+
+const randomSample = function(p5, count, width, height) {
+  return Array(count).fill().map(() => ({x: Math.round(p5.random(0, width - 1)), y: Math.round(p5.random(0, height - 1)) }))
 }
 
 function FlowLine(p5, {column, row, cellSize, angle}) {
@@ -108,12 +112,13 @@ new p5((p5) => {
     }
 
     p5.draw = () => {
-        flowField.values.forEach((columns, row) => columns.forEach((value, column) => {
+        /*flowField.values.forEach((columns, row) => columns.forEach((value, column) => {
             const line = new FlowLine(p5, { column, row, cellSize, angle: value })
             line.render()
-        }))
+        }))*/
         
-        const startingPoints = sample(8000, canvasSize.width, canvasSize.height);
+        // const startingPoints = poissonSample(8000, canvasSize.width, canvasSize.height);
+        const startingPoints = randomSample(p5, 4500, canvasSize.width, canvasSize.height);
         // const startingPoints = [{x: Math.round(p5.random(canvasSize.width)), y: Math.round(p5.random(canvasSize.height))}];
         startingPoints.forEach((start) => {
             const curve = new Curve(p5, { start, steps: 30, flowField, step: cellSize * 5 })

@@ -18,6 +18,10 @@ export function getCenter(polygon) {
     return { x: x / polygon.length, y: y / polygon.length }
 }
 
+export function getRange(start, end) {
+    return new Array(end - start).fill().map((element, index) => start + index)
+}
+
 /** Returns the intersecting lines with a polygon */
 export function getIntersectingLines(p5, lines = [], polygon = []) {
     const polygonLines = getPolygonLines(polygon);
