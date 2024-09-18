@@ -49,6 +49,10 @@ export function FlowField(p5, { width, height, cellSize = 20, initialize = getSl
         return this.values[row][column]
     }
     
+    this.getCellValue = ({column, row}) => {
+        return this.values[row]?.[column]
+    }
+    
     this.getWeightedAverageAt = ({x, y}) => {
         const column = x / cellSize;
         const row = y / cellSize;
@@ -78,24 +82,38 @@ export function FlowField(p5, { width, height, cellSize = 20, initialize = getSl
     }
     
     this.forEach = (predicate) => {
-        this.values.forEach((columns, row,) => columns.forEach((value, column, columns) => {
+        this.values.forEach((columns, row, rows) => columns.forEach((value, column, columns) => {
             const point = {value, column, row, x: column * cellSize, y: row * cellSize}
-            const previous = {
+            const left = {
                 value: columns[column - 1],
                 column: column - 1,
                 row,
                 x: (column - 1) * cellSize,
                 y: row * cellSize
             }
-            const next = {
+            const right = {
                 value: columns[column + 1],
                 column: column + 1,
                 row,
                 x: (column + 1) * cellSize,
                 y: row * cellSize
             }
+            const top = {
+                value: rows[row - 1][column],
+                column,
+                row: row - 1,
+                x: column * cellSize,
+                y: (row - 1) * cellSize
+            }
+            const bottom = {
+                value: rows[row + 1][column],
+                column,
+                row: row + 1,
+                x: column * cellSize,
+                y: (row + 1) * cellSize
+            }
             
-            predicate(point, previous, next)
+            predicate(point, left, right, top, bottom)
         }))
     }
 }

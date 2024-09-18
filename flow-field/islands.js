@@ -1,7 +1,9 @@
-window.P5 = p5;
-
 import PolygonRepeller from './PolygonRepeller.js';
 import {FlowField} from '../collision/flow-field.js';
+import {getLevels, getNoise} from "../marching-squares/terrain.js";
+import { Curve } from "./flow-curve.js";
+
+window.P5 = p5;
 
 const poissonSample = function(count, width, height) {
   let distance = width / Math.sqrt((count * height) / width);
@@ -33,59 +35,6 @@ const anchorSample = (p5, count, anchor, width, height) => {
     return Array(count).fill().map(() => ({x: Math.round(p5.random(0, width - 1) + anchor.x - width / 2), y: Math.round(p5.random(0, height - 1) + anchor.y - height / 2) }))
 }
 
-function Curve(p5, { flowField, repellers = [], start, steps, step = 10, darkMode = false }) {
-    this.vertices = [start];
-    for (let i = 0; i < steps; i++) {
-        const vertex = this.vertices[i];
-        const value = flowField.getWeightedAverageAt(vertex);
-        if (value === undefined) {
-            break;
-        }
-        let flow = P5.Vector.fromAngle(value, step)
-        const nextVertex = {x: vertex.x + flow.x, y: vertex.y + flow.y}
-        if (repellers.length > 0) {
-            for (const repeller of repellers) {
-                flow = repeller.repel(nextVertex, flow);
-            }
-        }
-        // const vector = p5.createVector(vertex.x, vertex.y);
-        // vector.add(flow)
-        this.vertices.push({x: vertex.x + flow.x, y: vertex.y + flow.y})
-    }
-    
-    this.render = () => {
-        p5.strokeWeight(1)
-        // p5.stroke(244, 85, 49, 100);
-        darkMode ? p5.stroke(255, 255, 255, 100) : p5.stroke(0, 0, 0, 100);
-        p5.fill(0, 0)
-        p5.beginShape();
-        const length = this.vertices.length;
-        this.vertices.forEach(({x, y}, index) => {
-            p5.curveVertex(x, y);
-            if (index === 0 || index === length - 1) {
-                // First and last vertices are curve control points, so we are repeating them to get anchor points.
-                p5.curveVertex(x, y);
-            }
-        })
-        p5.endShape();
-    }
-    
-    this.renderVertices = () => {
-        // Dots at vertices
-        p5.strokeWeight(3)
-        p5.stroke(0, 0, 0, 255);
-        this.vertices.forEach(({x, y}) => {
-            p5.point(x, y)
-        })
-    }
-    
-    this.renderStartingVertex = () => {
-        p5.strokeWeight(5)
-        p5.stroke(255, 0, 0, 255);
-        p5.point(this.vertices[0].x, this.vertices[0].y)
-    }
-}
-
 new p5((p5) => {
     const cellSize = 20;
     const noiseIncrement = 0.1;
@@ -94,6 +43,8 @@ new p5((p5) => {
     // const canvasSize = { width: Math.floor(640 / cellSize) * cellSize, height: Math.floor(480 / cellSize) * cellSize }
     let flowField;
     let repellers = [];
+    let levels = {};
+    const waterLevel = 80
     window.save = (name) => p5.save(name)
     window.p5 = p5
     
@@ -116,17 +67,33 @@ new p5((p5) => {
         window.flowField = flowField
     }
     
-    const initializeRepellers = () => {
+    const initializeRepellers = (initialSeed) => {
         if (controls.repellerOn.checked()) {
+            const simplex = new SimplexNoise(initialSeed);
+            const options = {noiseScale: 60, noisePersistence: 0.35, noiseIntensity: 5, strokeWeight: 1, lineDensity: 50, range: 1, cellSize: 6, smoothing: 3};
+            const initializeValue = (column, row) => getNoise(16, column, row, simplex, options.noisePersistence, options.noiseScale, options.noiseIntensity)
+            const terrainFlowField = new FlowField(p5, {
+                width: Math.round(canvasSize.width / options.cellSize),
+                height: Math.round(canvasSize.height / options.cellSize),
+                cellSize: options.cellSize,
+                initialize: initializeValue
+            });
+            levels = getLevels(p5, terrainFlowField, options)
+            window.levels = levels
+            
             // const repellerOrigins = [{ x: 150, y: canvasSize.height / 2 }];
             const repellerOrigins = randomSample(p5, 5, canvasSize.width * 0.75, canvasSize.height);
             // const repellerOrigins = poissonSample( 10, canvasSize.width, canvasSize.height * 0.66);
             // repellers = repellerOrigins.map(({ x, y }) => new Repeller(p5, x, canvasSize.height * 0.33 + y))
-            repellers = repellerOrigins
+            /*repellers = repellerOrigins
                 .map(({x, y}) => {
                     const hexagon = getHexagon(p5, { x, y }, 50)
                     return new PolygonRepeller(p5, hexagon)
-                })
+                })*/
+            repellers = levels[waterLevel].map((spline) => {
+                return new PolygonRepeller(p5, spline)
+            })
+            
             // repellers.forEach((repeller) => {
             //     repeller.power = p5.random(controls.repellerPower.value());
             // })
@@ -152,7 +119,6 @@ new p5((p5) => {
         controls.repellerPower = p5.createSlider(0, 100, 20, 1);
         controls.repellerPower.parent(container)
         controls.repellerPower.elt.onchange = () => {
-            const power = p5.random(controls.repellerPower.value());
             repellers.forEach(repeller => {
                 repeller.power = p5.random(controls.repellerPower.value());
             })
@@ -161,7 +127,7 @@ new p5((p5) => {
         controls.repellerOn = p5.createCheckbox('Repellers', true);
         controls.repellerOn.parent(container)
         controls.repellerOn.elt.onchange = () => {
-            initializeRepellers();
+            initializeRepellers(initialSeed);
             p5.draw();
         }
         controls.seed = p5.createButton('Seed');
@@ -178,7 +144,7 @@ new p5((p5) => {
         
         const initialSeed = /*1009208*/ 6888242;
         initialize(initialSeed);
-        initializeRepellers();
+        initializeRepellers(initialSeed);
     }
 
     p5.draw = () => {
@@ -198,14 +164,34 @@ new p5((p5) => {
         
         curveOrigins.forEach((start) => {
             const curve = new Curve(p5, {start, steps: 100, flowField, repellers, step: 10, darkMode: false})
-            curve.render();
-            curve.renderVertices();
-            curve.renderStartingVertex();
+            curve.render('#0000ff');
+            // curve.renderVertices();
+            // curve.renderStartingVertex();
         })
         
-        repellers.forEach((repeller) => {
+        /*repellers.forEach((repeller) => {
             repeller.render();
             repeller.renderForces();
+        })*/
+        
+        Object.entries(levels).forEach(([level, splines], index) => {
+            if (Number(level) < waterLevel) {
+                return;
+            }
+            const color = '#ff0000'
+            p5.stroke(color);
+            p5.strokeWeight(1);
+            splines.forEach((spline) => {
+                p5.beginShape();
+                const start = spline[0];
+                const end = spline[spline.length - 1];
+                p5.curveVertex(start.x, start.y);
+                spline.forEach(({ x, y }) => {
+                    p5.curveVertex(x, y);
+                })
+                p5.curveVertex(end.x, end.y);
+                p5.endShape();
+            })
         })
         
         p5.noLoop();
