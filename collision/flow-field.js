@@ -1,3 +1,4 @@
+// FIXME Move out of collision directory to a more common place
 const getSlightNoiseValue = (column, row, p5) => {
     const main = 0;
     const range = p5.PI;

@@ -1,6 +1,6 @@
 window.P5 = p5;
 
-import Repeller from './Repeller.js';
+import PolygonRepeller from './PolygonRepeller.js';
 import {FlowField} from '../collision/flow-field.js';
 
 const poissonSample = function(count, width, height) {
@@ -14,6 +14,17 @@ const poissonSample = function(count, width, height) {
   return sampling.fill().map(([x, y]) => ({x, y}));
 }
 
+const getHexagon = (p5, center = { x: 0, y: 0 }, radius) => {
+    const hexagon = []
+    for (let i = 0; i < 6; i++) {
+    let angle = p5.TWO_PI / 6 * i;
+    let x = center.x + p5.cos(angle) * radius;
+    let y = center.y + p5.sin(angle) * radius;
+    hexagon.push({ x, y })
+  }
+    return hexagon;
+}
+
 const randomSample = function(p5, count, width, height) {
   return Array(count).fill().map(() => ({x: Math.round(p5.random(0, width - 1)), y: Math.round(p5.random(0, height - 1)) }))
 }
@@ -25,21 +36,21 @@ const anchorSample = (p5, count, anchor, width, height) => {
 function Curve(p5, { flowField, repellers = [], start, steps, step = 10, darkMode = false }) {
     this.vertices = [start];
     for (let i = 0; i < steps; i++) {
-        const point = this.vertices[i];
-        const vector = p5.createVector(point.x, point.y);
-        const value = flowField.getWeightedAverageAt(point);
+        const vertex = this.vertices[i];
+        const value = flowField.getWeightedAverageAt(vertex);
         if (value === undefined) {
             break;
         }
-        const force = P5.Vector.fromAngle(value, step)
-        vector.add(force)
+        let flow = P5.Vector.fromAngle(value, step)
+        const nextVertex = {x: vertex.x + flow.x, y: vertex.y + flow.y}
         if (repellers.length > 0) {
             for (const repeller of repellers) {
-                const repel = repeller.repel(vector);
-                vector.add(repel);
+                flow = repeller.repel(nextVertex, flow);
             }
         }
-        this.vertices.push({x: vector.x, y: vector.y})
+        // const vector = p5.createVector(vertex.x, vertex.y);
+        // vector.add(flow)
+        this.vertices.push({x: vertex.x + flow.x, y: vertex.y + flow.y})
     }
     
     this.render = () => {
@@ -107,11 +118,18 @@ new p5((p5) => {
     
     const initializeRepellers = () => {
         if (controls.repellerOn.checked()) {
-            // repellers = poissonSample( 10, canvasSize.width, canvasSize.height * 0.66).map(({ x, y }) => new Repeller(p5, x, canvasSize.height * 0.33 + y))
-            repellers = randomSample(p5,  25, canvasSize.width * 0.75, canvasSize.height).map(({ x, y }) => new Repeller(p5, x + canvasSize.width * 0.25, y))
-            repellers.forEach((repeller) => {
-                repeller.power = p5.random(controls.repellerPower.value());
-            })
+            // const repellerOrigins = [{ x: 150, y: canvasSize.height / 2 }];
+            const repellerOrigins = randomSample(p5, 5, canvasSize.width * 0.75, canvasSize.height);
+            // const repellerOrigins = poissonSample( 10, canvasSize.width, canvasSize.height * 0.66);
+            // repellers = repellerOrigins.map(({ x, y }) => new Repeller(p5, x, canvasSize.height * 0.33 + y))
+            repellers = repellerOrigins
+                .map(({x, y}) => {
+                    const hexagon = getHexagon(p5, { x, y }, 50)
+                    return new PolygonRepeller(p5, hexagon)
+                })
+            // repellers.forEach((repeller) => {
+            //     repeller.power = p5.random(controls.repellerPower.value());
+            // })
             // repellers = [
             //     new Repeller(p5, canvasSize.width * 0.5, canvasSize.height * 0.5, power)
             // ];
@@ -126,12 +144,12 @@ new p5((p5) => {
         // p5.noiseDetail(2, 0.25)
         
         const container = document.querySelector('#controls');
-        controls.count = p5.createSlider(0, 1000, 500, 10);
+        controls.count = p5.createSlider(0, 1000, 20, 10);
         controls.count.parent(container)
         controls.count.elt.onchange = () => {
             p5.draw();
         }
-        controls.repellerPower = p5.createSlider(0, 2000, 1000, 10);
+        controls.repellerPower = p5.createSlider(0, 100, 20, 1);
         controls.repellerPower.parent(container)
         controls.repellerPower.elt.onchange = () => {
             const power = p5.random(controls.repellerPower.value());
@@ -170,19 +188,24 @@ new p5((p5) => {
         // flowField.render()
         
         const count = controls.count.value()
-        // const startingPoints = poissonSample(count, canvasSize.width, canvasSize.height);
-        // const startingPoints = randomSample(p5, count, canvasSize.width, canvasSize.height);
-        // const startingPoints = [{x: Math.round(p5.random(canvasSize.width)), y: Math.round(p5.random(canvasSize.height))}];
-        // const startingPoints = [{x: Math.round(p5.random(canvasSize.width)), y: Math.round(p5.random(canvasSize.height))}];
-        // const startingPoints = [{x: Math.round(canvasSize.width * 0.25), y: Math.round(canvasSize.height * 0.25)}];
-        // const startingPoints = anchorSample(p5, count, {x: canvasSize.width / 2, y: 20}, canvasSize.width, 10);
-        const startingPoints = anchorSample(p5, count, {x: 20, y: canvasSize.height / 2}, 10, canvasSize.height);
+        // const curveOrigins = poissonSample(count, canvasSize.width, canvasSize.height);
+        // const curveOrigins = randomSample(p5, count, canvasSize.width, canvasSize.height);
+        // const curveOrigins = [{x: 0, y: Math.round(canvasSize.height / 2)}];
+        // const curveOrigins = [{x: Math.round(p5.random(canvasSize.width)), y: Math.round(p5.random(canvasSize.height))}];
+        // const curveOrigins = [{x: Math.round(canvasSize.width * 0.25), y: Math.round(canvasSize.height * 0.25)}];
+        // const curveOrigins = anchorSample(p5, count, {x: canvasSize.width / 2, y: 20}, canvasSize.width, 10);
+        const curveOrigins = anchorSample(p5, count, {x: 20, y: canvasSize.height / 2}, 10, canvasSize.height);
         
-        startingPoints.forEach((start) => {
-            const curve = new Curve(p5, {start, steps: 500, flowField, repellers, step: 5, darkMode: false})
+        curveOrigins.forEach((start) => {
+            const curve = new Curve(p5, {start, steps: 100, flowField, repellers, step: 10, darkMode: false})
             curve.render();
-            // curve.renderVertices();
-            // curve.renderStartingVertex();
+            curve.renderVertices();
+            curve.renderStartingVertex();
+        })
+        
+        repellers.forEach((repeller) => {
+            repeller.render();
+            repeller.renderForces();
         })
         
         p5.noLoop();
