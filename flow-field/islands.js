@@ -44,7 +44,7 @@ new p5((p5) => {
     let flowField;
     let repellers = [];
     let levels = {};
-    const waterLevel = 80
+    const waterLevel = 40
     window.save = (name) => p5.save(name)
     window.p5 = p5
     
@@ -67,7 +67,7 @@ new p5((p5) => {
         window.flowField = flowField
     }
     
-    const initializeRepellers = (initialSeed) => {
+    const initializeRepellers = (initialSeed, repellerPower) => {
         if (controls.repellerOn.checked()) {
             const simplex = new SimplexNoise(initialSeed);
             const options = {noiseScale: 60, noisePersistence: 0.35, noiseIntensity: 5, strokeWeight: 1, lineDensity: 50, range: 1, cellSize: 6, smoothing: 3};
@@ -91,7 +91,7 @@ new p5((p5) => {
                     return new PolygonRepeller(p5, hexagon)
                 })*/
             repellers = levels[waterLevel].map((spline) => {
-                return new PolygonRepeller(p5, spline)
+                return new PolygonRepeller(p5, spline, repellerPower)
             })
             
             // repellers.forEach((repeller) => {
@@ -106,17 +106,18 @@ new p5((p5) => {
     }
     
     p5.setup = () => {
+        const repellerPower = 3;
         p5.frameRate(1)
         p5.createCanvas(canvasSize.width, canvasSize.height, p5.SVG);
         // p5.noiseDetail(2, 0.25)
         
         const container = document.querySelector('#controls');
-        controls.count = p5.createSlider(0, 1000, 20, 10);
+        controls.count = p5.createSlider(0, 1000, 100, 10);
         controls.count.parent(container)
         controls.count.elt.onchange = () => {
             p5.draw();
         }
-        controls.repellerPower = p5.createSlider(0, 100, 20, 1);
+        controls.repellerPower = p5.createSlider(0, 100, repellerPower, 1);
         controls.repellerPower.parent(container)
         controls.repellerPower.elt.onchange = () => {
             repellers.forEach(repeller => {
@@ -127,7 +128,7 @@ new p5((p5) => {
         controls.repellerOn = p5.createCheckbox('Repellers', true);
         controls.repellerOn.parent(container)
         controls.repellerOn.elt.onchange = () => {
-            initializeRepellers(initialSeed);
+            initializeRepellers(initialSeed, controls.repellerPower.value());
             p5.draw();
         }
         controls.seed = p5.createButton('Seed');
@@ -144,7 +145,7 @@ new p5((p5) => {
         
         const initialSeed = /*1009208*/ 6888242;
         initialize(initialSeed);
-        initializeRepellers(initialSeed);
+        initializeRepellers(initialSeed, repellerPower);
     }
 
     p5.draw = () => {
@@ -154,13 +155,13 @@ new p5((p5) => {
         // flowField.render()
         
         const count = controls.count.value()
-        // const curveOrigins = poissonSample(count, canvasSize.width, canvasSize.height);
+        const curveOrigins = poissonSample(count, canvasSize.width, canvasSize.height);
         // const curveOrigins = randomSample(p5, count, canvasSize.width, canvasSize.height);
         // const curveOrigins = [{x: 0, y: Math.round(canvasSize.height / 2)}];
         // const curveOrigins = [{x: Math.round(p5.random(canvasSize.width)), y: Math.round(p5.random(canvasSize.height))}];
         // const curveOrigins = [{x: Math.round(canvasSize.width * 0.25), y: Math.round(canvasSize.height * 0.25)}];
         // const curveOrigins = anchorSample(p5, count, {x: canvasSize.width / 2, y: 20}, canvasSize.width, 10);
-        const curveOrigins = anchorSample(p5, count, {x: 20, y: canvasSize.height / 2}, 10, canvasSize.height);
+        // const curveOrigins = anchorSample(p5, count, {x: 20, y: canvasSize.height / 2}, 10, canvasSize.height);
         
         curveOrigins.forEach((start) => {
             const curve = new Curve(p5, {start, steps: 100, flowField, repellers, step: 10, darkMode: false})

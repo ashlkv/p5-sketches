@@ -4,14 +4,14 @@ import { debugBezier } from "./bezier.js";
 window.P5 = p5;
 
 new p5((p5) => {
-    const cellSize = 50;
+    const cellSize = 20;
     const noiseIncrement = 0.1;
     const canvasSize = {
         width: Math.floor(window.innerWidth / cellSize) * cellSize,
         height: Math.floor(window.innerHeight / cellSize) * cellSize
     }
     const getNoiseValue = (column, row) => {
-        return p5.noise(column * noiseIncrement, row * noiseIncrement) * p5.TWO_PI
+        return p5.noise(column * noiseIncrement, row * noiseIncrement) * p5.PI
     }
     let flowField = new FlowField(p5, { width: canvasSize.width / cellSize, height: canvasSize.height / cellSize, cellSize, initialize: getNoiseValue });
     

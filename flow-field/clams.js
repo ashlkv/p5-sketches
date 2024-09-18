@@ -1,19 +1,23 @@
 import { FlowField } from "../collision/flow-field.js";
 import { debugBezier } from "./bezier.js";
+import { poissonSample } from "../common/noise.js";
 
 window.P5 = p5;
 
 new p5((p5) => {
-    const cellSize = 50;
+    const cellSize = 150;
     const noiseIncrement = 0.1;
     const canvasSize = {
         width: Math.floor(window.innerWidth / cellSize) * cellSize,
         height: Math.floor(window.innerHeight / cellSize) * cellSize
     }
-    const getNoiseValue = (column, row) => {
-        return p5.noise(column * noiseIncrement, row * noiseIncrement) * p5.TWO_PI
-    }
-    let flowField = new FlowField(p5, { width: canvasSize.width / cellSize, height: canvasSize.height / cellSize, cellSize, initialize: getNoiseValue });
+    
+    let noiseGrid = new FlowField(p5, {
+        width: canvasSize.width / cellSize,
+        height: canvasSize.height / cellSize,
+        cellSize,
+        initialize: (column, row) => p5.noise(column * 0.1, row * 0.1) * p5.PI / 2
+    });
     
     const getButterfly = (anchor, angle1 = p5.PI / 2, angle2 = p5.PI / 2, radius1 = 100, radius2 = 100) => {
         const anchor1 = anchor
@@ -29,12 +33,11 @@ new p5((p5) => {
         const control3 = { x: anchor1.x + handle3.x, y: anchor1.y + handle3.y }
         const control4 = { x: anchor2.x + handle4.x, y: anchor2.y + handle4.y }
         return [
-            { anchor1, control1, control2, anchor2 },
-            { anchor1, control1: control3, control2: control4, anchor2 },
+            { anchor1, control1, control2, anchor2, radius: radius1 },
+            { anchor1, control1: control3, control2: control4, anchor2, radius: radius2 },
         ]
     }
     
-    window.flowField = flowField;
     window.save = (name) => p5.save(name)
     window.p5 = p5
     
@@ -47,14 +50,43 @@ new p5((p5) => {
     }
 
     p5.draw = () => {
-        flowField.forEach(({value: value1}) => {
-            const radius1 = value1 / p5.TWO_PI * 200;
-            const butterfly = getButterfly({ x: canvasSize.width / 2, y: canvasSize.height / 2 }, value1, value1, radius1 * 5, radius1 * 5)
-            butterfly.forEach(({ anchor1, control1, control2, anchor2 }, index) => {
-                p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
-                // debugBezier(p5, anchor1, control1, control2, anchor2, index === 0 ? '#ff0000' : '#0000ff');
+        const origins = poissonSample(50, canvasSize.width, canvasSize.height);
+        origins.forEach(({x, y}) => {
+            const size = noiseGrid.getValueAt({ x, y })
+            const clam = [];
+            const clamCellSize = cellSize / 2;
+            p5.noiseSeed(Date.now())
+            let clamNoiseGrid = new FlowField(p5, {
+                width: canvasSize.width / clamCellSize,
+                height: canvasSize.height / clamCellSize,
+                cellSize: clamCellSize,
+                initialize: (column, row) => p5.noise(column * noiseIncrement, row * noiseIncrement) * p5.TWO_PI
+            });
+            clamNoiseGrid.forEach(({value: value1}, {value: value2}) => {
+                if (!value2) {
+                    return;
+                }
+                const radius1 = value1 / p5.TWO_PI * 50 * size;
+                const radius2 = value2 / p5.TWO_PI * 50 * size;
+                const butterfly = getButterfly({ x, y }, value1, value2, radius1 * 5, radius2 * 5)
+                clam.push(butterfly);
             })
+            clam.sort(([{ radius: first }], [{ radius: second }]) => second - first)
+            p5.fill(255)
+            p5.push()
+            if (size) {
+                // p5.rotate(size)
+            }
+            clam.forEach((butterfly) => {
+                butterfly.forEach(({ anchor1, control1, control2, anchor2 }, index) => {
+                    p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
+                    // debugBezier(p5, anchor1, control1, control2, anchor2, index === 0 ? '#ff0000' : '#0000ff');
+                })
+            })
+            p5.pop()
         })
+        
+        
         p5.noLoop();
     }
 }, document.querySelector('main'));

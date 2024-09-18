@@ -99,14 +99,14 @@ export function FlowField(p5, { width, height, cellSize = 20, initialize = getSl
                 y: row * cellSize
             }
             const top = {
-                value: rows[row - 1][column],
+                value: rows[row - 1]?.[column],
                 column,
                 row: row - 1,
                 x: column * cellSize,
                 y: (row - 1) * cellSize
             }
             const bottom = {
-                value: rows[row + 1][column],
+                value: rows[row + 1]?.[column],
                 column,
                 row: row + 1,
                 x: column * cellSize,

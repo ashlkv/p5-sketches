@@ -133,11 +133,11 @@ new p5((p5) => {
             line.render()
         }))
         
-        const startingPoints = sample(20000, canvasSize.width, canvasSize.height);
+        const startingPoints = sample(1000, canvasSize.width, canvasSize.height);
         // const startingPoints = [{x: Math.round(p5.random(canvasSize.width)), y: Math.round(p5.random(canvasSize.height))}];
         // const startingPoints = [{x: Math.round(canvasSize.width / 2), y: Math.round(canvasSize.height / 2)}];
         startingPoints.forEach((start) => {
-            const curve = new BezierCurve(p5, { start, steps: 2, flowField, step: 250, handle: 125 })
+            const curve = new BezierCurve(p5, { start, steps: 10, flowField, step: 30, handle: 125 })
             p5.strokeWeight(1)
             // p5.stroke(244, 85, 49, 100);
             p5.stroke(0, 0, 0, 100);
