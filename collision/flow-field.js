@@ -75,4 +75,26 @@ export function FlowField(p5, { width, height, cellSize = 20, initialize = getSl
             line.render()
         }))
     }
+    
+    this.forEach = (predicate) => {
+        this.values.forEach((columns, row,) => columns.forEach((value, column, columns) => {
+            const point = {value, column, row, x: column * cellSize, y: row * cellSize}
+            const previous = {
+                value: columns[column - 1],
+                column: column - 1,
+                row,
+                x: (column - 1) * cellSize,
+                y: row * cellSize
+            }
+            const next = {
+                value: columns[column + 1],
+                column: column + 1,
+                row,
+                x: (column + 1) * cellSize,
+                y: row * cellSize
+            }
+            
+            predicate(point, previous, next)
+        }))
+    }
 }

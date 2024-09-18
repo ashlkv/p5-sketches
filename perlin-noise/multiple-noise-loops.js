@@ -47,20 +47,19 @@ new p5((p5) => {
             const vertices = getLoop(p5, phase, noiseMax, { min: radiusMin, max: radiusMax });
             vertices.forEach(({ x, y }) => p5.vertex(x, y));
             p5.endShape(p5.CLOSE);
-            /*const falloff = p5.map(index, 0, count - 1, 0, 2);
-            if ((index + 1) % 20 === 0) {
-                const octaves = Math.round(p5.map(index, 0, count - 1, 8, 1));
+            const falloff = p5.map(index, 0, count - 1, 0, 2);
+                // const octaves = Math.round(p5.map(index, 0, count - 1, 8, 1));
+                const octaves = 4;
                 p5.noiseDetail(octaves, falloff)
-            }*/
             // if ((index + 1) % 20 === 0) {
             //     p5.noiseSeed(index)
             // }
-            noiseMax -= 0.01
+            noiseMax -= 0.001
             radiusMin += 1;
             radiusMax += 1;
-            angle += 0.1
-            phase += 0.007
-            p5.rotate(Math.sin(angle) / 200)
+            angle += 0.01
+            phase += 0.001
+            p5.rotate(Math.sin(angle) / 500)
             // p5.translate(angle / 5, angle / 5)
             // phase += Math.sin(angle) > 0 ? 0.01 : -0.01
         })

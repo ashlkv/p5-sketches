@@ -75,17 +75,16 @@ new p5((p5) => {
         // let threshold = 5;
         let threshold = 1;
         Array(200).fill().forEach((element, index) => {
+            const falloff = p5.map(index, 0, count - 1, 0, 1.5);
             if ((index + 1) % threshold === 0) {
                 // threshold = fibonacciGenerator();
-                threshold = threshold * Math.round(1.3);
+                threshold = Math.round(threshold * 1.3);
                 loops.push(getLoop(p5, phase, noiseMax, { min: radiusMin, max: radiusMax }))
-            }
-            const falloff = p5.map(index, 0, count - 1, 0, 1.5);
-            if ((index + 1) % 20 === 0) {
+                // const octaves = Math.round(p5.map(index, 0, count - 1, 8, 1));
                 const octaves = Math.round(p5.map(index, 0, count - 1, 8, 1));
                 p5.noiseDetail(octaves, falloff)
             }
-            p5.noiseSeed(seed + index)
+            // p5.noiseSeed(seed + index)
             noiseMax -= 0.01
             radiusMin += 1;
             radiusMax += 1;
@@ -106,7 +105,10 @@ new p5((p5) => {
                 loop.forEach(({ x, y }) => p5.vertex(x, y));
                 p5.endShape(p5.CLOSE);
                 angle += 0.1
-                p5.rotate(Math.sin(angle) / 200)
+                p5.rotate(Math.sin(angle) / 500)
+                // p5.translate(angle / 200)
+                // angle += -0.007
+                // p5.rotate(angle)
             }
         }
         

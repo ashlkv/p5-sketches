@@ -1,4 +1,4 @@
-function FlowLine(p5, {column, row, noiseIncrement, cellSize, visible = false}) {
+export function FlowLine(p5, {column, row, noiseIncrement, cellSize, visible = false}) {
     this.update = (time = undefined) => {
         this.angle = p5.noise(column * noiseIncrement, row * noiseIncrement, time) * p5.TWO_PI;
         this.vector = P5.Vector.fromAngle(this.angle)
@@ -16,3 +16,5 @@ function FlowLine(p5, {column, row, noiseIncrement, cellSize, visible = false}) 
 
     this.update()
 }
+
+

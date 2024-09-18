@@ -1,5 +1,7 @@
 window.P5 = p5;
 
+import { FlowLine } from "./flow-line.js";
+
 new p5((p5) => {
     const particleCount = 300;
     const noiseIncrement = 0.1;

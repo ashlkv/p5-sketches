@@ -105,6 +105,7 @@ new p5((p5) => {
 
     p5.setup = () => {
         p5.frameRate(5)
+        p5.noiseDetail(3, 0.5)
         p5.createCanvas(canvasSize.width, canvasSize.height, p5.SVG);
         // p5.noiseDetail(2, 0.25)
         flowField = new FlowField(p5, {width: canvasSize.width / cellSize, height: canvasSize.height / cellSize, noiseIncrement, cellSize})
@@ -117,11 +118,11 @@ new p5((p5) => {
             line.render()
         }))*/
         
-        // const startingPoints = poissonSample(8000, canvasSize.width, canvasSize.height);
-        const startingPoints = randomSample(p5, 4500, canvasSize.width, canvasSize.height);
+        // const startingPoints = poissonSample(13000, canvasSize.width, canvasSize.height);
+        const startingPoints = randomSample(p5, 5000, canvasSize.width, canvasSize.height);
         // const startingPoints = [{x: Math.round(p5.random(canvasSize.width)), y: Math.round(p5.random(canvasSize.height))}];
         startingPoints.forEach((start) => {
-            const curve = new Curve(p5, { start, steps: 30, flowField, step: cellSize * 5 })
+            const curve = new Curve(p5, { start, steps: 30, flowField, step: cellSize * 4.5 })
             p5.strokeWeight(1)
             // p5.stroke(244, 85, 49, 100);
             p5.stroke(0, 0, 0, 100);
