@@ -47,7 +47,6 @@ new p5((p5) => {
     }
 
     p5.draw = () => {
-/*
         flowField.forEach(({value: value2, x: x2, y: y2}, {value: value1, x: x1, y: y1}) => {
             if (value1 === undefined) {
                 return;
@@ -62,10 +61,9 @@ new p5((p5) => {
             const control2 = {x: anchor2.x + vector2.x, y: anchor2.y + vector2.y}
             
             p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
-            debugBezier(p5, anchor1, control1, control2, anchor2);
+            // debugBezier(p5, anchor1, control1, control2, anchor2);
         })
-*/
-        flowField.forEach(({value: value1, x: x1, y: y1}) => {
+        /*flowField.forEach(({value: value1, x: x1, y: y1}) => {
             const radius1 = value1 / p5.TWO_PI * 200;
             const anchor1 = {x: x1, y: y1}
             const butterfly = getButterfly(anchor1, value1, value1, radius1, radius1)
@@ -73,7 +71,7 @@ new p5((p5) => {
                 p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
                 // debugBezier(p5, anchor1, control1, control2, anchor2, index === 0 ? '#ff0000' : '#0000ff');
             })
-        })
+        })*/
         p5.noLoop();
     }
 }, document.querySelector('main'));
