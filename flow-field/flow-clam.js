@@ -65,10 +65,19 @@ new p5((p5) => {
             debugBezier(p5, anchor1, control1, control2, anchor2);
         })
 */
-        flowField.forEach(({value: value1, x: x1, y: y1}) => {
+        /*flowField.forEach(({value: value1, x: x1, y: y1}) => {
             const radius1 = value1 / p5.TWO_PI * 200;
             const anchor1 = {x: x1, y: y1}
             const butterfly = getButterfly(anchor1, value1, value1, radius1, radius1)
+            butterfly.forEach(({ anchor1, control1, control2, anchor2 }, index) => {
+                p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
+                // debugBezier(p5, anchor1, control1, control2, anchor2, index === 0 ? '#ff0000' : '#0000ff');
+            })
+        })*/
+        
+        flowField.forEach(({value: value1}) => {
+            const radius1 = value1 / p5.TWO_PI * 200;
+            const butterfly = getButterfly({ x: canvasSize.width / 2, y: canvasSize.height / 2 }, value1, value1, radius1 * 5, radius1 * 5)
             butterfly.forEach(({ anchor1, control1, control2, anchor2 }, index) => {
                 p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
                 // debugBezier(p5, anchor1, control1, control2, anchor2, index === 0 ? '#ff0000' : '#0000ff');

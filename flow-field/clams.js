@@ -47,28 +47,9 @@ new p5((p5) => {
     }
 
     p5.draw = () => {
-/*
-        flowField.forEach(({value: value2, x: x2, y: y2}, {value: value1, x: x1, y: y1}) => {
-            if (value1 === undefined) {
-                return;
-            }
+        flowField.forEach(({value: value1}) => {
             const radius1 = value1 / p5.TWO_PI * 200;
-            const radius2 = value2 / p5.TWO_PI * 200
-            const vector1 = P5.Vector.fromAngle(value1 + p5.PI, radius1);
-            const vector2 = P5.Vector.fromAngle(value2, radius2)
-            const anchor1 = {x: x1, y: y1}
-            const control1 = {x: anchor1.x + vector1.x, y: anchor1.y + vector1.y}
-            const anchor2 = {x: x2, y: y2}
-            const control2 = {x: anchor2.x + vector2.x, y: anchor2.y + vector2.y}
-            
-            p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
-            debugBezier(p5, anchor1, control1, control2, anchor2);
-        })
-*/
-        flowField.forEach(({value: value1, x: x1, y: y1}) => {
-            const radius1 = value1 / p5.TWO_PI * 200;
-            const anchor1 = {x: x1, y: y1}
-            const butterfly = getButterfly(anchor1, value1, value1, radius1, radius1)
+            const butterfly = getButterfly({ x: canvasSize.width / 2, y: canvasSize.height / 2 }, value1, value1, radius1 * 5, radius1 * 5)
             butterfly.forEach(({ anchor1, control1, control2, anchor2 }, index) => {
                 p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
                 // debugBezier(p5, anchor1, control1, control2, anchor2, index === 0 ? '#ff0000' : '#0000ff');
