@@ -4,16 +4,21 @@ import { debugBezier } from "./bezier.js";
 window.P5 = p5;
 
 new p5((p5) => {
-    const cellSize = 20;
+    const cellSize = 30;
     const noiseIncrement = 0.1;
     const canvasSize = {
         width: Math.floor(window.innerWidth / cellSize) * cellSize,
         height: Math.floor(window.innerHeight / cellSize) * cellSize
     }
     const getNoiseValue = (column, row) => {
-        return p5.noise(column * noiseIncrement, row * noiseIncrement) * p5.PI
+        return p5.noise(column * noiseIncrement, row * noiseIncrement) * p5.PI * 2
     }
-    let flowField = new FlowField(p5, { width: canvasSize.width / cellSize, height: canvasSize.height / cellSize, cellSize, initialize: getNoiseValue });
+    window.seed = Date.now();
+    // p5.noiseSeed(window.seed)
+    p5.noiseDetail(2, 1)
+    p5.noiseSeed(1726861209056)
+    let flowField1 = new FlowField(p5, { width: canvasSize.width / cellSize, height: canvasSize.height / cellSize, cellSize, initialize: getNoiseValue });
+    let flowField2 = new FlowField(p5, { width: canvasSize.width / cellSize, height: canvasSize.height / cellSize, cellSize, initialize: getNoiseValue });
     
     const getButterfly = (anchor, angle1 = p5.PI / 2, angle2 = p5.PI / 2, radius1 = 100, radius2 = 100) => {
         const anchor1 = anchor
@@ -34,7 +39,7 @@ new p5((p5) => {
         ]
     }
     
-    window.flowField = flowField;
+    window.flowField = flowField1;
     window.save = (name) => p5.save(name)
     window.p5 = p5
     
@@ -43,16 +48,19 @@ new p5((p5) => {
         p5.createCanvas(canvasSize.width, canvasSize.height, p5.SVG);
         p5.noFill()
         p5.strokeWeight(1)
-        p5.stroke(0);
+        p5.stroke('#ff0000');
     }
 
     p5.draw = () => {
-        flowField.forEach(({value: value2, x: x2, y: y2}, {value: value1, x: x1, y: y1}) => {
+        flowField1.forEach(({value: value2, x: x2, y: y2}, {value: value1, x: x1, y: y1}) => {
             if (value1 === undefined) {
                 return;
             }
-            const radius1 = value1 / p5.TWO_PI * 200;
-            const radius2 = value2 / p5.TWO_PI * 200
+            const radiusNoise = p5.map(flowField1.getValueAt({ x: x2, y: y2 }), 0, 4, 1.1, 1.5)
+            // const radiusNoise = flowField1.getValueAt({ x: x2, y: y2 })
+            
+            const radius1 = value1 / p5.TWO_PI * 300 * radiusNoise;
+            const radius2 = value2 / p5.TWO_PI * 300 * radiusNoise;
             const vector1 = P5.Vector.fromAngle(value1 + p5.PI, radius1);
             const vector2 = P5.Vector.fromAngle(value2, radius2)
             const anchor1 = {x: x1, y: y1}
@@ -60,10 +68,28 @@ new p5((p5) => {
             const anchor2 = {x: x2, y: y2}
             const control2 = {x: anchor2.x + vector2.x, y: anchor2.y + vector2.y}
             
+            p5.stroke('#00ffff')
             p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
             // debugBezier(p5, anchor1, control1, control2, anchor2);
         })
-        /*flowField.forEach(({value: value1, x: x1, y: y1}) => {
+        flowField2.forEach(({value: value2, x: x2, y: y2}, {value: value1, x: x1, y: y1}) => {
+            if (value1 === undefined) {
+                return;
+            }
+            const radius1 = value1 / p5.TWO_PI * 300;
+            const radius2 = value2 / p5.TWO_PI * 300
+            const vector1 = P5.Vector.fromAngle(value1 + p5.PI, radius1);
+            const vector2 = P5.Vector.fromAngle(value2, radius2)
+            const anchor1 = {x: x1, y: y1}
+            const control1 = {x: anchor1.x + vector1.x, y: anchor1.y + vector1.y}
+            const anchor2 = {x: x2, y: y2}
+            const control2 = {x: anchor2.x + vector2.x, y: anchor2.y + vector2.y}
+            
+            p5.stroke('#ff0000')
+            p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
+            // debugBezier(p5, anchor1, control1, control2, anchor2);
+        })
+        flowField.forEach(({value: value1, x: x1, y: y1}) => {
             const radius1 = value1 / p5.TWO_PI * 200;
             const anchor1 = {x: x1, y: y1}
             const butterfly = getButterfly(anchor1, value1, value1, radius1, radius1)
@@ -71,7 +97,7 @@ new p5((p5) => {
                 p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
                 // debugBezier(p5, anchor1, control1, control2, anchor2, index === 0 ? '#ff0000' : '#0000ff');
             })
-        })*/
+        })
         p5.noLoop();
     }
 }, document.querySelector('main'));

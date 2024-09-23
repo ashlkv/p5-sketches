@@ -8,3 +8,8 @@ export function poissonSample(count, width, height) {
   });
   return sampling.fill().map(([x, y]) => ({x, y}));
 }
+
+export function randomSample(p5, count, width, height) {
+  return Array(count).fill().map(() => ({x: Math.round(p5.random(0, width - 1)), y: Math.round(p5.random(0, height - 1)) }))
+}
+

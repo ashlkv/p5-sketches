@@ -1,11 +1,11 @@
 import { FlowField } from "../collision/flow-field.js";
 import { debugBezier } from "./bezier.js";
-import { poissonSample } from "../common/noise.js";
+import {poissonSample, randomSample} from "../common/noise.js";
 
 window.P5 = p5;
 
 new p5((p5) => {
-    const cellSize = 150;
+    const cellSize = 100;
     const noiseIncrement = 0.1;
     const canvasSize = {
         width: Math.floor(window.innerWidth / cellSize) * cellSize,
@@ -50,11 +50,15 @@ new p5((p5) => {
     }
 
     p5.draw = () => {
-        const origins = poissonSample(50, canvasSize.width, canvasSize.height);
+        // const origins = poissonSample(100, canvasSize.width, canvasSize.height);
+        const origins = randomSample(p5, 200, canvasSize.width - 150, canvasSize.height - 100);
         origins.forEach(({x, y}) => {
+            if (y < 200 || x < 250) {
+                return;
+            }
             const size = noiseGrid.getValueAt({ x, y })
             const clam = [];
-            const clamCellSize = cellSize / 2;
+            const clamCellSize = cellSize;
             p5.noiseSeed(Date.now())
             let clamNoiseGrid = new FlowField(p5, {
                 width: canvasSize.width / clamCellSize,
@@ -66,8 +70,8 @@ new p5((p5) => {
                 if (!value2) {
                     return;
                 }
-                const radius1 = value1 / p5.TWO_PI * 50 * size;
-                const radius2 = value2 / p5.TWO_PI * 50 * size;
+                const radius1 = value1 / p5.TWO_PI * 100 * size;
+                const radius2 = value2 / p5.TWO_PI * 100 * size;
                 const butterfly = getButterfly({ x, y }, value1, value2, radius1 * 5, radius2 * 5)
                 clam.push(butterfly);
             })
