@@ -1,5 +1,5 @@
 import {getCenter, getIntersectingLines, getRange} from "./intersection.js";
-import {FlowField} from "./flow-field.js";
+import {FlowField} from "../common/flow-field.js";
 
 
 window.P5 = p5;

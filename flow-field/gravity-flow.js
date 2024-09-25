@@ -1,7 +1,7 @@
 window.P5 = p5;
 
 import Repeller from './Repeller.js';
-import {FlowField} from '../collision/flow-field.js';
+import {FlowField} from '../common/flow-field.js';
 
 const poissonSample = function(count, width, height) {
   let distance = width / Math.sqrt((count * height) / width);
