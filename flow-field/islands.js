@@ -1,5 +1,5 @@
 import PolygonRepeller from './PolygonRepeller.js';
-import {FlowField} from '../collision/flow-field.js';
+import {FlowField} from '../common/flow-field.js';
 import {getLevels, getNoise} from "../marching-squares/terrain.js";
 import { Curve } from "./flow-curve.js";
 

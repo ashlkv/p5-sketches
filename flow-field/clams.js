@@ -1,4 +1,4 @@
-import { FlowField } from "../collision/flow-field.js";
+import { FlowField } from "../common/flow-field.js";
 import { debugBezier } from "./bezier.js";
 import {poissonSample, randomSample} from "../common/noise.js";
 
