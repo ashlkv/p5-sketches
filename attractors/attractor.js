@@ -1,14 +1,10 @@
-// The Nature of Code
-// Daniel Shiffman
-// http://natureofcode.com
-
-function Mover(p5, position, velocity, mass) {
+export function Attractor(p5, position, velocity, mass) {
     this.position = position;
     this.velocity = velocity;
     // this.velocity.mult(0.01)
     this.acceleration = new P5.Vector(0, 0);
     this.mass = mass;
-    this.radius = p5.sqrt(this.mass) * 4;
+    this.vertices = []
     
     this.applyForce = (force) => {
         let acceleration = P5.Vector.div(force, this.mass);
@@ -21,11 +17,12 @@ function Mover(p5, position, velocity, mass) {
         this.acceleration.set(0, 0);
     }
     
-    this.show = () => {
-        p5.stroke(0, 50);
-        p5.strokeWeight(1);
-        p5.fill(255, 10);
-        p5.ellipse(this.position.x, this.position.y, this.radius * 2);
+    this.render = () => {
+        p5.beginShape();
+        for (const {x, y} of this.vertices) {
+            p5.curveVertex(x, y)
+        }
+        p5.endShape();
     }
     
     this.attract = (mover) => {
