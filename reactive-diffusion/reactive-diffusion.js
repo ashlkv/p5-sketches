@@ -41,17 +41,23 @@ new p5((p5) => {
     p5.draw = () => {
         p5.background(51);
         
-        grid.forEach((x, y) => {
-            if (x === 0 || y === 0 || x === grid.width - 1 || y === grid.height - 1) {
-                return;
-            }
-            const { a, b } = grid[x][y];
-            const laplaceA = convolveCell(grid, x, y, kernel, (value, ratio) => value.a * ratio);
-            const laplaceB = convolveCell(grid, x, y, kernel, (value, ratio) => value.b * ratio);
-            const nextA = a + (diffusionA * laplaceA - a * b * b + feedA * (1 - a)) * speed;
-            const nextB = b + (diffusionB * laplaceB + a * b * b - (killRateB + feedA) * b) * speed;
-            next[x][y] = { a: p5.constrain(nextA, 0, 1), b: p5.constrain(nextB, 0, 1) }
+        Array(100).fill().forEach(() => {
+            grid.forEach((x, y) => {
+                if (x === 0 || y === 0 || x === grid.width - 1 || y === grid.height - 1) {
+                    return;
+                }
+                const { a, b } = grid[x][y];
+                const laplaceA = convolveCell(grid, x, y, kernel, (value, ratio) => value.a * ratio);
+                const laplaceB = convolveCell(grid, x, y, kernel, (value, ratio) => value.b * ratio);
+                const nextA = a + (diffusionA * laplaceA - a * b * b + feedA * (1 - a)) * speed;
+                const nextB = b + (diffusionB * laplaceB + a * b * b - (killRateB + feedA) * b) * speed;
+                next[x][y] = { a: p5.constrain(nextA, 0, 1), b: p5.constrain(nextB, 0, 1) }
+            })
+            let temp = grid;
+            grid = next;
+            next = temp;
         })
+        
         
         p5.loadPixels();
         const {reset} = new Pixels(p5, p5.width, p5.height);
@@ -61,10 +67,6 @@ new p5((p5) => {
             return {r: c, g: c, b: c, alpha: 255}
         })
         p5.updatePixels();
-        
-        let temp = grid;
-        grid = next;
-        next = temp;
     }
 }, document.querySelector('main'));
 
