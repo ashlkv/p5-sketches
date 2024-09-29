@@ -2,10 +2,10 @@ const collatz = (number, roundness = 2) => {
     return number % 2 === 0 ? number / 2 : Math.max((number * 3 + 1) / roundness, 2)
 }
 
-export const getCollatzSequence = (from = 100) => {
+export const getCollatzSequence = (from = 100, roundness = 2) => {
     const sequence = [];
     let hardLimit = 0
-    for (let number = from; number > 1 && hardLimit < 1000; number = collatz(number)) {
+    for (let number = from; number > 1 && hardLimit < 1000; number = collatz(number, roundness)) {
         hardLimit++;
         sequence.push(number);
     }

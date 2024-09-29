@@ -1,4 +1,4 @@
-import {getGrowth} from "../common/collatz.js";
+import {getCollatzSequence, getGrowth} from "../common/collatz.js";
 
 window.P5 = p5;
 
@@ -30,6 +30,11 @@ new p5((p5) => {
         controls.iterations = p5.createSlider(10, 10000, 1000, 1);
         controls.iterations.parent(container)
         controls.iterations.elt.onchange = () => p5.draw();
+        
+        p5.createP('Roundness').parent(container);
+        controls.roundness = p5.createSlider(2, 8, 2, 2);
+        controls.roundness.parent(container)
+        controls.roundness.elt.onchange = () => p5.draw();
     }
     
     p5.draw = () => {
@@ -41,8 +46,10 @@ new p5((p5) => {
         const evenAngle = controls.evenAngle.value()
         const step = controls.step.value()
         const iterations = controls.iterations.value()
+        const roundness = controls.roundness.value()
+        const getSequence = (from) => getCollatzSequence(from, roundness)
         
-        const growth = getGrowth(p5, { iterations, origin: { x: canvasSize.width / 2, y: canvasSize.height / 2 }, initialAngle: p5.PI / 2, oddAngle, evenAngle, step });
+        const growth = getGrowth(p5, { iterations, origin: { x: canvasSize.width / 2, y: canvasSize.height / 2 }, initialAngle: p5.PI / 2, oddAngle, evenAngle, step, getSequence });
         growth.forEach((curve) => {
             p5.beginShape();
             curve.forEach(({x, y}, index, curve) => {
