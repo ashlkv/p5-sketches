@@ -73,7 +73,7 @@ export const getGrowth = (p5, {iterations = 1000, origin = {x: 0, y: 0}, initial
     while (curve = growth.pop()) {
         uniqueCurves.push(curve);
         growth.forEach((otherCurve, index) => {
-            if (curvesMatch(curve, otherCurve, 2, true)) {
+            if (curvesMatch(curve, otherCurve, 2, false)) {
                 growth.splice(index, 1);
             }
         })

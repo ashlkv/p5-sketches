@@ -56,7 +56,7 @@ new p5((p5) => {
         const iterations = controls.iterations.value()
         const roundness = controls.roundness.value()
         
-        const growth = getGrowth(p5, { iterations, origin: { x: canvasSize.width / 2, y: canvasSize.height / 2 }, initialAngle: p5.PI / 2, oddAngle, evenAngle, step, roundness, optimized: false });
+        const growth = getGrowth(p5, { iterations, origin: { x: canvasSize.width / 2, y: canvasSize.height / 2 }, initialAngle: p5.PI / 2, oddAngle, evenAngle, step, roundness, optimized: true });
         growth.forEach((curve) => {
             p5.beginShape();
             curve.forEach(({x, y}, index, curve) => {
