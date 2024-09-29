@@ -1,0 +1,54 @@
+const collatz = (number, roundness = 2) => {
+    return number % 2 === 0 ? number / 2 : Math.max((number * 3 + 1) / roundness, 2)
+}
+
+export const getSequence = (from = 100) => {
+    const sequence = [];
+    let hardLimit = 0
+    for (let number = from; number > 1 && hardLimit < 1000; number = collatz(number)) {
+        hardLimit++;
+        sequence.push(number);
+    }
+    sequence.push(1);
+    return sequence.reverse();
+}
+
+export const getCollatzCurve = (p5, {from = 100, origin = {x: 0, y: 0}, initialAngle = 0, oddAngle = 0.15, evenAngle = 0.15, step = 20, accumulateAngle = true} = {}) => {
+    const sequence = getSequence(from);
+    const vertices = []
+    let angle = initialAngle;
+    sequence.forEach((number, index, sequence) => {
+        const previous = vertices[index - 1];
+        if (previous) {
+            if (accumulateAngle) {
+                angle += number % 2 === 0 ? evenAngle : -oddAngle;
+            } else {
+                angle = number % 2 === 0 ? evenAngle : -oddAngle;
+            }
+            const vector = p5.createVector(previous.x, previous.y);
+            const direction = P5.Vector.fromAngle(angle, -step)
+            vector.add(direction);
+            vertices.push({x: vector.x, y: vector.y})
+        } else {
+            const {x, y} = origin
+            vertices.push({x, y})
+        }
+    })
+    return vertices;
+}
+
+export const getCollatzGrowth = (p5, {iterations = 1000, origin = {x: 0, y: 0}, initialAngle = 0, oddAngle = 0.15, evenAngle = 0.15, step = 20, accumulateAngle = true} = {}) => {
+    const growth = [];
+    for (let index = 2; index < iterations; index++) {
+        if (index % 2 === 0) {
+            continue;
+        }
+        const curve = getCollatzCurve(p5, { from: index, origin, initialAngle, oddAngle, evenAngle, step, accumulateAngle })
+        growth.push(curve)
+    }
+    return growth;
+}
+
+export const getCollatzMesh = (p5, options) => {
+    return getCollatzGrowth(p5, { ...options, accumulateAngle: false })
+}
