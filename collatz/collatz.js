@@ -8,14 +8,16 @@ new p5((p5) => {
         round: {"oddAngle": 0.392699081698724, "evenAngle": 0.141371669411541, "step": 18, "iterations": 1000, "roundness": 4},
         organic: {"oddAngle": 0.235619449019235, "evenAngle": 0.204203522483337, "step": 18, "iterations": 8823, "roundness": 4},
         funky: {"oddAngle": 0.235619449019235, "evenAngle": 0.549778714378214, "step": 6, "iterations": 6640, "roundness": 2},
+        funky2: {"oddAngle": 0.267035375555132, "evenAngle": 0.549778714378214, "step": 6, "iterations": 6639, "roundness": 2},
         original: {"oddAngle": 0.141371669411541, "evenAngle": 0.141371669411541, "step": 6, "iterations": 6639, "roundness": 2}
     }
-    const preset = presets.funky
+    const preset = presets.funky2
     const canvasSize = {width: window.innerWidth, height: window.innerHeight};
     const controls = {}
+    window.save = (name) => p5.save(name)
     
     p5.setup = () => {
-        p5.createCanvas(canvasSize.width, canvasSize.height);
+        p5.createCanvas(canvasSize.width, canvasSize.height, p5.SVG);
         
         const container = document.querySelector('#controls');
         
@@ -56,8 +58,22 @@ new p5((p5) => {
         const iterations = controls.iterations.value()
         const roundness = controls.roundness.value()
         
-        const growth = getGrowth(p5, { iterations, origin: { x: canvasSize.width / 2, y: canvasSize.height / 2 }, initialAngle: p5.PI / 2, oddAngle, evenAngle, step, roundness, optimized: true });
-        growth.forEach((curve) => {
+        const growth = getGrowth(p5, { iterations, origin: { x: canvasSize.width / 2, y: canvasSize.height / 2 }, initialAngle: p5.PI, oddAngle, evenAngle, step, roundness, optimized: true });
+        const red = growth.filter((curve, index) => index % 2 === 0)
+        const blue = growth.filter((curve, index) => index % 2 === 1)
+        blue.forEach((curve) => {
+            p5.stroke(0, 0, 255, 100)
+            p5.beginShape();
+            curve.forEach(({x, y}, index, curve) => {
+                if (index === 0 || index === curve.length - 1) {
+                    p5.curveVertex(x, y);
+                }
+                p5.curveVertex(x, y)
+            })
+            p5.endShape();
+        })
+        red.forEach((curve) => {
+            p5.stroke(255, 0, 0, 100)
             p5.beginShape();
             curve.forEach(({x, y}, index, curve) => {
                 if (index === 0 || index === curve.length - 1) {
