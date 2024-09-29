@@ -55,9 +55,8 @@ new p5((p5) => {
         const step = controls.step.value()
         const iterations = controls.iterations.value()
         const roundness = controls.roundness.value()
-        const getSequence = (from) => getCollatzSequence(from, roundness)
         
-        const growth = getGrowth(p5, { iterations, origin: { x: canvasSize.width / 2, y: canvasSize.height / 2 }, initialAngle: p5.PI / 2, oddAngle, evenAngle, step, getSequence, optimized: false });
+        const growth = getGrowth(p5, { iterations, origin: { x: canvasSize.width / 2, y: canvasSize.height / 2 }, initialAngle: p5.PI / 2, oddAngle, evenAngle, step, roundness, optimized: false });
         growth.forEach((curve) => {
             p5.beginShape();
             curve.forEach(({x, y}, index, curve) => {

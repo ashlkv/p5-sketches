@@ -1,6 +1,7 @@
 import {FlowField} from '../common/flow-field.js'
 import {poissonSample} from '../common/noise.js'
 import {FlowBezier} from "../common/flow-bezier.js";
+import {getGrowth} from "../common/collatz.js";
 
 window.P5 = p5;
 
@@ -10,6 +11,12 @@ new p5((p5) => {
     const canvasSize = {
         width: Math.floor(window.innerWidth / cellSize) * cellSize,
         height: Math.floor(window.innerHeight / cellSize) * cellSize
+    }
+    const collatzPresets = {
+        round: {"oddAngle": 0.392699081698724, "evenAngle": 0.141371669411541, "step": 18, "iterations": 1000, "roundness": 4},
+        organic: {"oddAngle": 0.235619449019235, "evenAngle": 0.204203522483337, "step": 18, "iterations": 1000, "roundness": 4},
+        funky: {"oddAngle": 0.235619449019235, "evenAngle": 0.549778714378214, "step": 6, "iterations": 6640, "roundness": 2},
+        original: {"oddAngle": 0.141371669411541, "evenAngle": 0.141371669411541, "step": 6, "iterations": 6639, "roundness": 2}
     }
     let flowField;
     const getNoiseValue = (column, row) => p5.noise(column * noiseIncrement, row * noiseIncrement) * p5.PI
@@ -32,19 +39,19 @@ new p5((p5) => {
     p5.draw = () => {
         flowField.render()
         const startingPoints = poissonSample(1000, canvasSize.width, canvasSize.height);
+        p5.strokeWeight(1)
+        p5.stroke(0, 0, 0, 100);
+        p5.noFill()
+        
         startingPoints.forEach((start) => {
             const curve = new FlowBezier(p5, {start, steps: 10, flowField, step: 40, handle: 15})
-            p5.strokeWeight(1)
-            // p5.stroke(244, 85, 49, 100);
-            p5.stroke(0, 0, 0, 100);
-            p5.fill(0, 0)
             curve.segments.forEach(({anchor1, anchor2, control1, control2}, index, vertices) => {
                 p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
             })
             
             // curve.renderHandles()
-            curve.renderAnchors()
-            curve.renderStart()
+            // curve.renderAnchors()
+            // curve.renderStart()
             window.curve = curve
         })
         
