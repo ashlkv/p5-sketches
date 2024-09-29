@@ -2,7 +2,7 @@ const collatz = (number, roundness = 2) => {
     return number % 2 === 0 ? number / 2 : Math.max((number * 3 + 1) / roundness, 2)
 }
 
-export const getSequence = (from = 100) => {
+export const getCollatzSequence = (from = 100) => {
     const sequence = [];
     let hardLimit = 0
     for (let number = from; number > 1 && hardLimit < 1000; number = collatz(number)) {
@@ -13,7 +13,7 @@ export const getSequence = (from = 100) => {
     return sequence.reverse();
 }
 
-export const getCollatzCurve = (p5, {from = 100, origin = {x: 0, y: 0}, initialAngle = 0, oddAngle = 0.15, evenAngle = 0.15, step = 20, accumulateAngle = true} = {}) => {
+export const getCurve = (p5, {from = 100, origin = {x: 0, y: 0}, initialAngle = 0, oddAngle = 0.15, evenAngle = 0.15, step = 20, accumulateAngle = true, getSequence = getCollatzSequence} = {}) => {
     const sequence = getSequence(from);
     const vertices = []
     let angle = initialAngle;
@@ -37,18 +37,18 @@ export const getCollatzCurve = (p5, {from = 100, origin = {x: 0, y: 0}, initialA
     return vertices;
 }
 
-export const getCollatzGrowth = (p5, {iterations = 1000, origin = {x: 0, y: 0}, initialAngle = 0, oddAngle = 0.15, evenAngle = 0.15, step = 20, accumulateAngle = true} = {}) => {
+export const getGrowth = (p5, {iterations = 1000, origin = {x: 0, y: 0}, initialAngle = 0, oddAngle = 0.15, evenAngle = 0.15, step = 20, accumulateAngle = true, getSequence = getCollatzSequence} = {}) => {
     const growth = [];
     for (let index = 2; index < iterations; index++) {
         if (index % 2 === 0) {
             continue;
         }
-        const curve = getCollatzCurve(p5, { from: index, origin, initialAngle, oddAngle, evenAngle, step, accumulateAngle })
+        const curve = getCurve(p5, { from: index, origin, initialAngle, oddAngle, evenAngle, step, accumulateAngle, getSequence })
         growth.push(curve)
     }
     return growth;
 }
 
-export const getCollatzMesh = (p5, options) => {
-    return getCollatzGrowth(p5, { ...options, accumulateAngle: false })
+export const getMesh = (p5, options) => {
+    return getGrowth(p5, { ...options, accumulateAngle: false })
 }
