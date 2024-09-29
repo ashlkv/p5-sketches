@@ -5,9 +5,12 @@ window.P5 = p5;
 
 new p5((p5) => {
     const presets = {
-        round: {"oddAngle": 0.392699081698724, "evenAngle": 0.141371669411541, "step": 18, "iterations": 1000, "roundness": 4}
+        round: {"oddAngle": 0.392699081698724, "evenAngle": 0.141371669411541, "step": 18, "iterations": 1000, "roundness": 4},
+        organic: {"oddAngle": 0.235619449019235, "evenAngle": 0.204203522483337, "step": 18, "iterations": 8823, "roundness": 4},
+        funky: {"oddAngle": 0.235619449019235, "evenAngle": 0.549778714378214, "step": 6, "iterations": 6640, "roundness": 2},
+        original: {"oddAngle": 0.141371669411541, "evenAngle": 0.141371669411541, "step": 6, "iterations": 6639, "roundness": 2}
     }
-    const preset = presets.round
+    const preset = presets.funky
     const canvasSize = {width: window.innerWidth, height: window.innerHeight};
     const controls = {}
     
@@ -54,7 +57,7 @@ new p5((p5) => {
         const roundness = controls.roundness.value()
         const getSequence = (from) => getCollatzSequence(from, roundness)
         
-        const growth = getGrowth(p5, { iterations, origin: { x: canvasSize.width / 2, y: canvasSize.height / 2 }, initialAngle: p5.PI / 2, oddAngle, evenAngle, step, getSequence, optimized: true });
+        const growth = getGrowth(p5, { iterations, origin: { x: canvasSize.width / 2, y: canvasSize.height / 2 }, initialAngle: p5.PI / 2, oddAngle, evenAngle, step, getSequence, optimized: false });
         growth.forEach((curve) => {
             p5.beginShape();
             curve.forEach(({x, y}, index, curve) => {

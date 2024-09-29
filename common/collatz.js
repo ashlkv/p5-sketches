@@ -63,11 +63,11 @@ export const getGrowth = (p5, {iterations = 1000, origin = {x: 0, y: 0}, initial
         const curve = getCurve(p5, { from: index, origin, initialAngle, oddAngle, evenAngle, step, accumulateAngle, getSequence })
         growth.push(curve)
     }
+    // Starting from longer curves to be able to remove subset curves.
+    growth.sort((first, second) => first.length - second.length)
     if (!optimized) {
         return growth;
     }
-    // Starting from longer curves to be able to remove subset curves.
-    growth.sort((first, second) => second.length - first.length)
     const uniqueCurves = [];
     let curve;
     while (curve = growth.pop()) {
