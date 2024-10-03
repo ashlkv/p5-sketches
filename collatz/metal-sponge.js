@@ -62,7 +62,7 @@ new p5((p5) => {
             return sequence;
         }
         
-        const growth = getGrowth(p5, { iterations, origin: { x: canvasSize.width / 2, y: canvasSize.height / 2 }, initialAngle: p5.PI / 2, oddAngle, evenAngle, step, getSequence });
+        const growth = getGrowth(p5, { from: iterations, origin: { x: canvasSize.width / 2, y: canvasSize.height / 2 }, initialAngle: p5.PI / 2, oddAngle, evenAngle, step, getSequence });
         growth.forEach((curve) => {
             p5.beginShape();
             curve.forEach(({x, y}, index, curve) => {

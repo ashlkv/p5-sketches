@@ -58,21 +58,19 @@ new p5((p5) => {
         const iterations = controls.iterations.value()
         const roundness = controls.roundness.value()
         
-        const growth = getGrowth(p5, { iterations, origin: { x: canvasSize.width / 2, y: canvasSize.height / 2 }, initialAngle: p5.PI, oddAngle, evenAngle, step, roundness, optimized: true });
-        const red = growth.filter((curve, index) => index % 2 === 0)
-        const blue = growth.filter((curve, index) => index % 2 === 1)
-        blue.forEach((curve) => {
-            p5.stroke(0, 0, 255, 100)
-            p5.beginShape();
-            curve.forEach(({x, y}, index, curve) => {
-                if (index === 0 || index === curve.length - 1) {
-                    p5.curveVertex(x, y);
-                }
-                p5.curveVertex(x, y)
-            })
-            p5.endShape();
-        })
-        red.forEach((curve) => {
+        const growth = getGrowth(p5, {
+            from: iterations,
+            origin: {x: canvasSize.width / 2, y: canvasSize.height / 2},
+            initialAngle: p5.PI,
+            oddAngle,
+            evenAngle,
+            step,
+            roundness,
+            optimized: true
+        });
+        const red = growth.filter((element, index) => index % 8 !== 0)
+        const blue = growth.filter((element, index) => index % 8 === 0)
+        red.forEach((curve, index) => {
             p5.stroke(255, 0, 0, 100)
             p5.beginShape();
             curve.forEach(({x, y}, index, curve) => {
@@ -83,6 +81,18 @@ new p5((p5) => {
             })
             p5.endShape();
         })
+        blue.forEach((curve, index) => {
+            p5.stroke(0, 0, 255, 100)
+            p5.beginShape();
+            curve.forEach(({x, y}, index, curve) => {
+                if (index === 0 || index === curve.length - 1) {
+                    p5.curveVertex(x, y);
+                }
+                p5.curveVertex(x, y)
+            })
+            p5.endShape();
+        })
+        
         p5.noLoop();
     }
 }, document.querySelector('main'));
