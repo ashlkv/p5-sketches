@@ -52,6 +52,11 @@ new p5((p5) => {
     };
     
     p5.draw = () => {
+        const isKeyframe = automata.frameCount % p5.round(60 / p5.frameRate()) === 0;
+        automata.frameCount = automata.frameCount < 60 ? automata.frameCount + 1 : 0;
+        if (!isKeyframe) {
+            return
+        }
         automata.renderGeneration();
     };
     

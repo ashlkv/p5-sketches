@@ -20,11 +20,6 @@ function CellularAutomata(p5, width, height, firstGeneration, ruleset, getNewCel
     this.renderPoint = renderPoint ?? defaultPointRenderer
     
     this.renderGeneration = () => {
-        const isKeyframe = this.frameCount % p5.round(60 / p5.frameRate()) === 0;
-        this.frameCount = this.frameCount < 60 ? this.frameCount + 1 : 0;
-        if (!isKeyframe) {
-            return
-        }
         for (let cellIndex = 0; cellIndex < this.generation.length; cellIndex ++) {
             let leftCell = this.generation[cellIndex - 1];
             let middleCell = this.generation[cellIndex];
