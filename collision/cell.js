@@ -21,15 +21,12 @@ function getPolygonVariation(p5, polygon, phase, noiseMax) {
     const vectors = relative.map(({ x, y }) => p5.createVector(x, y));
     return vectors.map((vector) => {
         const angle = vector.heading();
-        const xOffset = p5.map(p5.cos(angle + phase), -1, 1, 0, noiseMax);
-        const yOffset = p5.map(p5.sin(angle + phase), -1, 1, 0, noiseMax);
+        const xOffset = p5.map(p5.cos(angle + phase), -1, 1, 0, noiseMax.x);
+        const yOffset = p5.map(p5.sin(angle + phase), -1, 1, 0, noiseMax.y);
         const radius = p5.map(p5.noise(xOffset, yOffset), 0, 1, 100, 600);
         const x = p5.cos(angle) * radius * (1 + phase);
         const y = p5.sin(angle) * radius * (1 + phase);
-        vertices.push({ x, y })
-        
-        
-        return relativeToAbsolute({x: vector.x + offsetNoise.x, y: vector.y + offsetNoise.y}, center)
+        return relativeToAbsolute({x: vector.x + x, y: vector.y + y}, center)
     })
 }
 
@@ -45,7 +42,6 @@ function getLoop(p5, phase, noiseMax) {
         const radius = p5.map(p5.noise(xOffset, yOffset), 0, 1, 100, 600);
         const x = p5.cos(angle) * radius * (1 + phase);
         const y = p5.sin(angle) * radius * (1 + phase);
-        vertices.push({ x, y })
     }
     return vertices;
 }

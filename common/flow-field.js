@@ -2,6 +2,7 @@
 const getSlightNoiseValue = (column, row, p5) => {
     const main = 0;
     const range = p5.PI;
+    const noiseIncrement = 0.01
     const variation = p5.noise(column * noiseIncrement, row * noiseIncrement) * range;
     return main - range / 2 + variation
 }
