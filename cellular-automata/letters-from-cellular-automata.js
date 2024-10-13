@@ -104,43 +104,45 @@ new p5((p5) => {
             }
         })*/
         const startAt = grid.findIndex(row => row[0] === 1)
-        grid.traverse((column, row, value, grid) => {
-            if (row < startAt) {
+        grid.forEach((row, rowIndex) => {
+            if (rowIndex < startAt) {
                 return;
             }
-            if (column === 0) {
-                const { x, y } = { x: (column) * offsetFactor, y: (row - startAt) * offsetFactor }
-                p5.beginShape();
-                p5.curveVertex(x, y)
-                p5.curveVertex(x, y)
-            }
-            const { x, y } = { x: (column + 15) * offsetFactor, y: (row - startAt) * offsetFactor }
-            if (hasTriangle(grid, column, row, 11, 8)) {
-                renderWave(x, y, 7)
-            } else if (hasTriangle(grid, column, row, 13, 7)) {
-                renderWave(x, y, 6)
-            } else if (hasTriangle(grid, column, row, 11, 6)) {
-                renderWave(x, y, 5)
-            } else if (hasTriangle(grid, column, row, 9, 5)) {
-                renderWave(x, y, 4)
-            } else if (hasTriangle(grid, column, row, 8, 4)) {
-                renderWave(x, y, 3.5)
-            } else if (hasTriangle(grid, column, row, 7, 4)) {
-                renderWave(x, y, 3)
-            } else if (hasTriangle(grid, column, row, 6, 3)) {
-                renderWave(x, y, 2.5)
-            } else if (hasTriangle(grid, column, row, 5, 3)) {
-                renderWave(x, y, 2)
-            } else if (hasTriangle(grid, column, row, 4, 2)) {
-                renderWave(x, y, 1.5)
-            } else if (hasTriangle(grid, column, row, 3, 2)) {
-                renderWave(x, y, 1)
-            }
-            if (column === grid.width - 1) {
-                p5.curveVertex(x + 20 * offsetFactor, y)
-                p5.curveVertex(x + 20 * offsetFactor, y)
-                p5.endShape();
-            }
+            row.forEach((value, columnIndex, row) => {
+                if (columnIndex === 0) {
+                    const { x, y } = { x: (columnIndex) * offsetFactor, y: (rowIndex - startAt) * offsetFactor }
+                    p5.beginShape();
+                    p5.curveVertex(x, y)
+                    p5.curveVertex(x, y)
+                }
+                const { x, y } = { x: (columnIndex + 15) * offsetFactor, y: (rowIndex - startAt) * offsetFactor }
+                if (hasTriangle(grid, columnIndex, rowIndex, 11, 8)) {
+                    renderWave(x, y, 7)
+                } else if (hasTriangle(grid, columnIndex, rowIndex, 13, 7)) {
+                    renderWave(x, y, 6)
+                } else if (hasTriangle(grid, columnIndex, rowIndex, 11, 6)) {
+                    renderWave(x, y, 5)
+                } else if (hasTriangle(grid, columnIndex, rowIndex, 9, 5)) {
+                    renderWave(x, y, 4)
+                } else if (hasTriangle(grid, columnIndex, rowIndex, 8, 4)) {
+                    renderWave(x, y, 3.5)
+                } else if (hasTriangle(grid, columnIndex, rowIndex, 7, 4)) {
+                    renderWave(x, y, 3)
+                } else if (hasTriangle(grid, columnIndex, rowIndex, 6, 3)) {
+                    renderWave(x, y, 2.5)
+                } else if (hasTriangle(grid, columnIndex, rowIndex, 5, 3)) {
+                    renderWave(x, y, 2)
+                } else if (hasTriangle(grid, columnIndex, rowIndex, 4, 2)) {
+                    renderWave(x, y, 1.5)
+                } else if (hasTriangle(grid, columnIndex, rowIndex, 3, 2)) {
+                    renderWave(x, y, 1)
+                }
+                if (columnIndex === row.length - 1) {
+                    p5.curveVertex(x + 20 * offsetFactor, y)
+                    p5.curveVertex(x + 20 * offsetFactor, y)
+                    p5.endShape();
+                }
+            })
         })
         p5.noLoop()
     };

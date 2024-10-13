@@ -31,7 +31,7 @@ new p5((p5) => {
         p5.createCanvas(width, height);
         p5.pixelDensity(1);
         
-        grid.forEach((x, y) => {
+        grid.traverse((x, y) => {
             if (x >= width / 2 && x < width / 2 + 10 && y >= height / 2 && y < height / 2 + 10) {
                 grid[x][y].b = 1;
             }
@@ -42,7 +42,7 @@ new p5((p5) => {
         p5.background(51);
         
         Array(100).fill().forEach(() => {
-            grid.forEach((x, y) => {
+            grid.traverse((x, y) => {
                 if (x === 0 || y === 0 || x === grid.width - 1 || y === grid.height - 1) {
                     return;
                 }

@@ -6,10 +6,9 @@ export function Grid(width, height, initialize = () => {}) {
     this.values.width = width;
     this.values.height = height;
     
-    const originalForEach = this.values.forEach;
     /** Iterates over each value */
-    this.values.forEach = function(predicate) {
-        originalForEach.call(this, (columns, row) => columns.forEach((value, column) => {
+    this.values.traverse = function(predicate) {
+        this.forEach.call(this, (columns, row) => columns.forEach((value, column) => {
             predicate(column, row, value, this)
         }))
     }
