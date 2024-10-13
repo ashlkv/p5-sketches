@@ -26,7 +26,7 @@ export const getCurve = (p5, {from = 100, to = 2, origin = {x: 0, y: 0}, initial
                 angle = number % 2 === 0 ? initialAngle + evenAngle : initialAngle - oddAngle;
             }
             const vector = p5.createVector(previous.x, previous.y);
-            const direction = P5.Vector.fromAngle(angle, -step)
+            const direction = P5.Vector.fromAngle(angle, typeof step === 'function' ? step(index) : -step)
             vector.add(direction);
             vertices.push({x: vector.x, y: vector.y})
         } else {

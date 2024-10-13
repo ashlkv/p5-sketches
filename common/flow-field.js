@@ -1,11 +1,7 @@
-// FIXME Move out of collision directory to a more common place
-const getSlightNoiseValue = (column, row, p5) => {
-    const main = 0;
-    const range = p5.PI;
+const getNoiseValue = (column, row, p5, ) => {
     const noiseIncrement = 0.01
-    const variation = p5.noise(column * noiseIncrement, row * noiseIncrement) * range;
-    return main - range / 2 + variation
-}
+    return p5.noise(column * noiseIncrement, row * noiseIncrement);
+};
 
 export function FlowLine(p5, {column, row, cellSize, angle}) {
     this.angle = angle;
@@ -28,7 +24,7 @@ export function FlowLine(p5, {column, row, cellSize, angle}) {
     }
 }
 
-export function FlowField(p5, { width, height, cellSize = 20, initialize = getSlightNoiseValue }) {
+export function FlowField(p5, { width, height, cellSize = 20, initialize = getNoiseValue }) {
     this.width = width;
     this.height = height
     this.values = Array(height).fill()

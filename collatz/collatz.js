@@ -1,5 +1,5 @@
-import {getCollatzSequence, getGrowth} from "../common/collatz.js";
-import {primeNumbers} from "../common/prime-numbers.js";
+import {getGrowth} from "../common/collatz.js";
+import {FlowField} from "../common/flow-field.js";
 
 window.P5 = p5;
 
@@ -9,9 +9,17 @@ new p5((p5) => {
         organic: {"oddAngle": 0.235619449019235, "evenAngle": 0.204203522483337, "step": 18, "iterations": 8823, "roundness": 4},
         funky: {"oddAngle": 0.235619449019235, "evenAngle": 0.549778714378214, "step": 6, "iterations": 6640, "roundness": 2},
         funky2: {"oddAngle": 0.267035375555132, "evenAngle": 0.549778714378214, "step": 6, "iterations": 6639, "roundness": 2},
-        original: {"oddAngle": 0.141371669411541, "evenAngle": 0.141371669411541, "step": 6, "iterations": 6639, "roundness": 2}
+        original: {"oddAngle": 0.141371669411541, "evenAngle": 0.141371669411541, "step": 6, "iterations": 6639, "roundness": 2},
+        bunch: {"oddAngle": 0.109955742875643, "evenAngle": 0.172787595947439, "step": 8, "iterations": 635, "roundness": 2},
+        round2: {
+            "oddAngle": 0.204203522483337,
+            "evenAngle": 0.235619449019235,
+            "step": 11,
+            "iterations": 342,
+            "roundness": 4
+        }
     }
-    const preset = presets.funky2
+    const preset = presets.round2
     const canvasSize = {width: window.innerWidth, height: window.innerHeight};
     const controls = {}
     window.save = (name) => p5.save(name)
@@ -52,25 +60,30 @@ new p5((p5) => {
         p5.noFill();
         p5.stroke(0)
         
+        
         const oddAngle = controls.oddAngle.value()
         const evenAngle = controls.evenAngle.value()
         const step = controls.step.value()
         const iterations = controls.iterations.value()
         const roundness = controls.roundness.value()
         
+        const getNoiseValue = (column, row) => {
+            const noiseIncrement = 0.05
+            return p5.noise(column * noiseIncrement, row * noiseIncrement);
+        }
+        const flowField = new FlowField(p5, { width: iterations, height: 1, cellSize: 1, initialize: getNoiseValue });
+        
         const growth = getGrowth(p5, {
             from: iterations,
-            origin: {x: canvasSize.width / 2, y: canvasSize.height / 2},
-            initialAngle: p5.PI,
+            origin: {x: canvasSize.width * 0.6, y: canvasSize.height / 2},
+            initialAngle: p5.PI * 1.5,
             oddAngle,
             evenAngle,
-            step,
+            step: (index) => (flowField.getValueAt({ x: index, y: 0 }) + 1) * step * 2,
             roundness,
             optimized: true
         });
-        const red = growth.filter((element, index) => index % 8 !== 0)
-        const blue = growth.filter((element, index) => index % 8 === 0)
-        red.forEach((curve, index) => {
+        growth.forEach((curve, index) => {
             p5.stroke(255, 0, 0, 100)
             p5.beginShape();
             curve.forEach(({x, y}, index, curve) => {
@@ -81,18 +94,6 @@ new p5((p5) => {
             })
             p5.endShape();
         })
-        blue.forEach((curve, index) => {
-            p5.stroke(0, 0, 255, 100)
-            p5.beginShape();
-            curve.forEach(({x, y}, index, curve) => {
-                if (index === 0 || index === curve.length - 1) {
-                    p5.curveVertex(x, y);
-                }
-                p5.curveVertex(x, y)
-            })
-            p5.endShape();
-        })
-        
         p5.noLoop();
     }
 }, document.querySelector('main'));

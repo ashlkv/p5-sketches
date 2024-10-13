@@ -1,13 +1,12 @@
 import {FlowField} from '../common/flow-field.js'
-import {poissonSample} from '../common/noise.js'
+import {poissonSample, randomSample} from '../common/noise.js'
 import {FlowBezier} from "../common/flow-bezier.js";
-import {getGrowth} from "../common/collatz.js";
 
 window.P5 = p5;
 
 new p5((p5) => {
     const cellSize = 50;
-    const noiseIncrement = 0.1;
+    const noiseIncrement = 0.01;
     const canvasSize = {
         width: Math.floor(window.innerWidth / cellSize) * cellSize,
         height: Math.floor(window.innerHeight / cellSize) * cellSize
@@ -37,14 +36,14 @@ new p5((p5) => {
     }
     
     p5.draw = () => {
-        flowField.render()
-        const startingPoints = poissonSample(1000, canvasSize.width, canvasSize.height);
+        // flowField.render()
+        const startingPoints = randomSample(p5, 200, canvasSize.width, 10);
         p5.strokeWeight(1)
         p5.stroke(0, 0, 0, 100);
         p5.noFill()
         
         startingPoints.forEach((start) => {
-            const curve = new FlowBezier(p5, {start, steps: 10, flowField, step: 40, handle: 15})
+            const curve = new FlowBezier(p5, {start, steps: 10, flowField, step: 100, handle: 50})
             curve.segments.forEach(({anchor1, anchor2, control1, control2}, index, vertices) => {
                 p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
             })

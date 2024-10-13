@@ -1,5 +1,5 @@
 import { FlowField } from "../common/flow-field.js";
-import { debugBezier } from "./bezier.js";
+import { debugBezier } from "../common/bezier.js";
 import {poissonSample, randomSample} from "../common/noise.js";
 
 window.P5 = p5;

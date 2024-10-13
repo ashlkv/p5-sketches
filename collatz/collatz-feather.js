@@ -32,7 +32,7 @@ new p5((p5) => {
     
     p5.draw = () => {
         p5.stroke(0)
-        const iterations = 1000
+        const iterations = 500
         const flowField = new FlowField(p5, {
             width: iterations,
             height: iterations,
@@ -48,7 +48,7 @@ new p5((p5) => {
             p5.translate(canvasSize.width / 2, canvasSize.height / 2)
             const sequence = getSequence(index);
             sequence.forEach((number) => {
-                const angle = flowField.getValueAt({ x: number, y: index }) / 20
+                const angle = Math.abs(flowField.getValueAt({ x: number, y: index }) / 20)
                 // const angle = flowField.getCellValue({ column: number, row: index }) / 20
                 // const angle = p5.PI / 20
                 // const length = angle * 20;
