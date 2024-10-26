@@ -1,4 +1,4 @@
-export default function Repeller(p5, x, y, power = 20000) {
+export default function VectorRepeller(p5, { x, y }, power = 20000) {
     this.position = p5.createVector(x, y);
     //{!1} How strong is the repeller?
     this.power = power;

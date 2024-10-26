@@ -1,4 +1,7 @@
+import {Pixels} from "./pixels.js";
+
 const getNoiseValue = (column, row, p5, ) => {
+    // FIXME Remove noise increment
     const noiseIncrement = 0.01
     return p5.noise(column * noiseIncrement, row * noiseIncrement);
 };
@@ -24,7 +27,7 @@ export function FlowLine(p5, {column, row, cellSize, angle}) {
     }
 }
 
-export function FlowField(p5, { width, height, cellSize = 20, initialize = getNoiseValue }) {
+function FlowField(p5, { width, height, cellSize = 20, initialize = getNoiseValue }) {
     this.width = width;
     this.height = height
     this.values = Array(height).fill()
@@ -71,11 +74,27 @@ export function FlowField(p5, { width, height, cellSize = 20, initialize = getNo
         return values.reduce((sum, {value, weight}) => sum + value * weight, 0) / weights
     }
     
+    /** @deprecated */
     this.render = () => {
         this.values.forEach((columns, row) => columns.forEach((value, column) => {
             const line = new FlowLine(p5, { column, row, cellSize, angle: value })
             line.render()
         }))
+    }
+    
+    this.renderVectors = () => {
+        this.render();
+    }
+    
+    this.renderGrid = () => {
+        p5.push();
+        p5.noStroke()
+        this.values.forEach((columns, row) => columns.forEach((value, column) => {
+            const color = p5.map(value, -1, 1, 0, 255)
+            p5.fill(color);
+            p5.rect(column * cellSize, row * cellSize, cellSize, cellSize)
+        }))
+        p5.pop();
     }
     
     this.forEach = (predicate) => {
@@ -114,3 +133,19 @@ export function FlowField(p5, { width, height, cellSize = 20, initialize = getNo
         }))
     }
 }
+
+FlowField.fromImage = function(p5, image, slice = { left: 0, top: 0, width: undefined, height: undefined }, options = { cellSize: 1 }) {
+    image.loadPixels();
+    return FlowField.fromPixels(p5, image.pixels, { width: image.width, height: image.height }, slice, options)
+}
+
+FlowField.fromPixels = function(p5, pixels, size, slice, { cellSize } = { cellSize: 1 }) {
+    const { get: getPixel } = Pixels.slice(p5, pixels, size, slice);
+    const initialize = (column, row) => {
+        const { r, g, b } = getPixel({x: column, y: row });
+        return p5.map((r + g + b) / 3, 0, 255, -1, 1);
+    };
+    return new FlowField(p5, { width: Math.floor(slice.width / cellSize), height: Math.floor(slice.height / cellSize), cellSize, initialize })
+}
+
+export { FlowField };

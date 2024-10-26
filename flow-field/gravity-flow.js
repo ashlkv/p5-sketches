@@ -1,6 +1,6 @@
 window.P5 = p5;
 
-import Repeller from './Repeller.js';
+import VectorRepeller from './VectorRepeller.js';
 import {FlowField} from '../common/flow-field.js';
 
 const poissonSample = function(count, width, height) {
@@ -107,13 +107,13 @@ new p5((p5) => {
     
     const initializeRepellers = () => {
         if (controls.repellerOn.checked()) {
-            // repellers = poissonSample( 10, canvasSize.width, canvasSize.height * 0.66).map(({ x, y }) => new Repeller(p5, x, canvasSize.height * 0.33 + y))
-            repellers = randomSample(p5,  25, canvasSize.width * 0.75, canvasSize.height).map(({ x, y }) => new Repeller(p5, x + canvasSize.width * 0.25, y))
+            // repellers = poissonSample( 10, canvasSize.width, canvasSize.height * 0.66).map(({ x, y }) => new Repeller(p5, { x, y: canvasSize.height * 0.33 + y}))
+            repellers = randomSample(p5,  25, canvasSize.width * 0.75, canvasSize.height).map(({ x, y }) => new VectorRepeller(p5, {x: x + canvasSize.width * 0.25, y}))
             repellers.forEach((repeller) => {
                 repeller.power = p5.random(controls.repellerPower.value());
             })
             // repellers = [
-            //     new Repeller(p5, canvasSize.width * 0.5, canvasSize.height * 0.5, power)
+            //     new Repeller(p5, {x: canvasSize.width * 0.5, y: canvasSize.height * 0.5}, power)
             // ];
         } else {
             repellers = [];

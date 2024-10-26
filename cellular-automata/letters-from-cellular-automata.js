@@ -43,24 +43,91 @@ new p5((p5) => {
     const renderPoint = (x, y, value) => {
         grid[y][x] = value;
     }
-    const renderTriangle = (x, y, size = 1) => {
-        p5.stroke(0)
-        p5.strokeWeight(1);
-        p5.noFill()
-        p5.beginShape()
-        p5.vertex(x + 0, y + 0)
-        p5.vertex(x + 10 * size, y + 10 * size)
-        p5.vertex(x + 20 * size, y + 0)
-        p5.endShape(p5.CLOSE)
+    
+    const curve8 = ({ x, y } = {x: 0, y: 0}) => {
+        const anchor1 = { x, y }
+        const anchor2 = { x: x + 50, y }
+        const control1 = { x: x + 100, y: y - 200 }
+        const control2 = { x, y: y + 100 }
+        return [{ anchor1, control1, control2, anchor2 }];
     }
     
-    const renderWave = (x, y, size = 1) => {
-        p5.curveVertex(x, y + 5 * size)
-        p5.curveVertex(x + 10 * size, y + 25 * size)
-        if (size >= 4) {
-            p5.curveVertex(x + 35 * size, y + 5 * size)
+    const curve7 = ({x, y} = {x: 0, y: 0}) => {
+        const segments = [];
+        (() => {
+            const anchor1 = { x, y }
+            const anchor2 = { x: x + 2, y }
+            const control1 = { x: x + 50, y: y - 100 }
+            const control2 = { x: x + 60, y: y - 100 }
+            segments.push({ anchor1, control1, control2, anchor2 })
+        })();
+        
+        (() => {
+            const anchor1 = { x: x + 2, y }
+            const anchor2 = { x: x + 30 , y }
+            const control1 = { x: x + 50, y: y - 75 }
+            const control2 = { x: x + 60, y: y - 75 }
+            segments.push({ anchor1, control1, control2, anchor2 })
+        })()
+        return segments;
+    }
+    
+    const curve6 = ({x, y} = {x: 0, y: 0}) => {
+        /*let beziers = [
+          [0, 53.71033, 5.818579, 29.98843, 23.721903, 0, 23.721903, 0],
+          [23.721903, 0, -7.168593, 55.80658, 15.217821, 56.84305, 39.397634, 57.96258],
+          [39.397634, 57.96258, 45.928379, 33.224, 56.843045, 3.133115, 63.978699, -16.53933],
+          [63.978699, -16.53933, 17.46979, 56.27554, 52.367214, 57.29066, 83.408059, 58.1936],
+          [83.408059, 58.1936, 96.517909, -10.31975, 91.754529, 1.670368, 79.216519, 33.23191],
+          [79.216519, 33.23191, 62.214042, 57.61825, 94.441019, 58.06583, 94.441019, 58.06583]
+        ];
+        const segments = beziers.map(bezier => {
+            return { anchor1: { x: bezier[0], y: bezier[1] }, control1: { x: bezier[2], y: bezier[3] }, control2: { x: bezier[4], y: bezier[5] }, anchor2: { x: bezier[6], y: bezier[7] }}
+        })
+        return segments;*/
+    }
+    
+    const curve2 = ({x, y} = {x: 0, y: 0}) => {
+        const anchor1 = { x, y }
+        const anchor2 = { x, y }
+        const control1 = { x: x + 25, y: y - 25 }
+        const control2 = { x: x - 25, y: y - 25 }
+        return [{ anchor1, control1, control2, anchor2 }];
+    }
+    
+    const curve1 = ({x, y} = {x: 0, y: 0}) => {
+        const anchor1 = { x, y }
+        const anchor2 = { x, y }
+        const control1 = { x: x + 5, y: y - 5 }
+        const control2 = { x: x - 5, y: y - 5 }
+        return [{ anchor1, control1, control2, anchor2 }];
+    }
+    
+    const connectBezier = (curve1, curve2) => {
+        const { anchor2: anchor12, control2: control12 } = Array.isArray(curve1) ? curve1.slice(-1)[0] : curve1;
+        const { anchor1: anchor21, control1: control21 } = Array.isArray(curve2) ? curve2[0] : curve2;
+        const handle1 = p5.createVector(control12.x - anchor12.x, control12.y - anchor12.y).rotate(p5.PI);
+        const handle2 = p5.createVector(control21.x - anchor21.x, control21.y - anchor21.y).rotate(p5.PI)
+        const distance = p5.dist(anchor12.x, anchor12.y, anchor21.x, anchor21.y)
+        handle1.setMag(handle1.mag() / distance * 3)
+        handle2.setMag(handle2.mag() / distance * 3)
+        return [{
+            anchor1: anchor12,
+            control1: { x: anchor12.x + handle1.x, y: anchor12.y + handle1.y },
+            control2: { x: anchor21.x + handle2.x, y: anchor21.y + handle2.y },
+            anchor2: anchor21,
+        }]
+    }
+    
+    const getBezier = ({x, y}, size = 1) => {
+        if (size === 8) {
+            return curve8({x, y})
+        } else if (size === 7) {
+            return curve7({x, y})
+        } else if (size > 1) {
+            return curve2({x, y})
         } else {
-            p5.curveVertex(x + 60 * size, y + 5 * size)
+            return curve1({x, y})
         }
     }
     
@@ -73,6 +140,7 @@ new p5((p5) => {
         p5.background(255);
         p5.frameRate(60)
         p5.noFill()
+        p5.stroke(0)
         new Array(height).fill().forEach(() => {
             automata.renderGeneration();
         })
@@ -80,69 +148,59 @@ new p5((p5) => {
     
     const offsetFactor = 10;
     p5.draw = () => {
-        p5.translate(0, canvasSize.height * 0.9)
-        p5.rotate(p5.PI * -0.5)
-        /*grid.forEach((column, row, value) => {
-            if (row < 20 || value !== 0) {
-                return;
-            }
-            const { x, y } = { x: column * offsetFactor, y: row * offsetFactor }
-            if (hasTriangle(grid, column, row, 11, 8)) {
-                renderTriangle(x, y, 7)
-            } else if (hasTriangle(grid, column, row, 10, 7)) {
-                renderTriangle(x, y, 6)
-            } else if (hasTriangle(grid, column, row, 9, 6)) {
-                renderTriangle(x, y, 5)
-            } else if (hasTriangle(grid, column, row, 8, 5)) {
-                renderTriangle(x, y, 4)
-            } else if (hasTriangle(grid, column, row, 7, 4)) {
-                renderTriangle(x, y, 3)
-            } else if (hasTriangle(grid, column, row, 5, 3)) {
-                renderTriangle(x, y, 2)
-            } else if (hasTriangle(grid, column, row, 3, 2)) {
-                renderTriangle(x, y, 1)
-            }
-        })*/
         const startAt = grid.findIndex(row => row[0] === 1)
         grid.forEach((row, rowIndex) => {
             if (rowIndex < startAt) {
                 return;
             }
+            const curves = [];
             row.forEach((value, columnIndex, row) => {
-                if (columnIndex === 0) {
-                    const { x, y } = { x: (columnIndex) * offsetFactor, y: (rowIndex - startAt) * offsetFactor }
-                    p5.beginShape();
-                    p5.curveVertex(x, y)
-                    p5.curveVertex(x, y)
+                let origin = {x: 50, y: 50 + (rowIndex - startAt) * 10};
+                const previous = curves.length > 0 ? curves.slice(-1)[0] : undefined;
+                if (previous) {
+                    const lastSegment = previous.slice(-1)[0]
+                    origin = { x: lastSegment.anchor2.x + 10, y: lastSegment.anchor2.y }
                 }
-                const { x, y } = { x: (columnIndex + 15) * offsetFactor, y: (rowIndex - startAt) * offsetFactor }
-                if (hasTriangle(grid, columnIndex, rowIndex, 11, 8)) {
-                    renderWave(x, y, 7)
-                } else if (hasTriangle(grid, columnIndex, rowIndex, 13, 7)) {
-                    renderWave(x, y, 6)
-                } else if (hasTriangle(grid, columnIndex, rowIndex, 11, 6)) {
-                    renderWave(x, y, 5)
+                const { x, y } = origin
+                let curve;
+                if (hasTriangle(grid, columnIndex, rowIndex, 11, 6)) {
+                    curve = getBezier({x, y}, 8)
                 } else if (hasTriangle(grid, columnIndex, rowIndex, 9, 5)) {
-                    renderWave(x, y, 4)
-                } else if (hasTriangle(grid, columnIndex, rowIndex, 8, 4)) {
-                    renderWave(x, y, 3.5)
+                    curve = getBezier({x, y}, 8)
                 } else if (hasTriangle(grid, columnIndex, rowIndex, 7, 4)) {
-                    renderWave(x, y, 3)
-                } else if (hasTriangle(grid, columnIndex, rowIndex, 6, 3)) {
-                    renderWave(x, y, 2.5)
+                    curve = getBezier({x, y}, 8)
                 } else if (hasTriangle(grid, columnIndex, rowIndex, 5, 3)) {
-                    renderWave(x, y, 2)
-                } else if (hasTriangle(grid, columnIndex, rowIndex, 4, 2)) {
-                    renderWave(x, y, 1.5)
+                    curve = getBezier({x, y}, 7)
                 } else if (hasTriangle(grid, columnIndex, rowIndex, 3, 2)) {
-                    renderWave(x, y, 1)
+                    curve = getBezier({x, y}, 2)
+                } else {
+                    curve = getBezier({x, y}, 1)
                 }
-                if (columnIndex === row.length - 1) {
-                    p5.curveVertex(x + 20 * offsetFactor, y)
-                    p5.curveVertex(x + 20 * offsetFactor, y)
-                    p5.endShape();
+                if (curve && previous) {
+                    const connection = connectBezier(curve, previous)
+                    curves.push(connection);
+                }
+                if (curve) {
+                    curves.push(curve);
                 }
             })
+            curves.forEach((curve, curveIndex, curves) => {
+                const { x, y } = { x: 0, y: (rowIndex - startAt) * offsetFactor }
+                // p5.beginShape();
+                // p5.curveVertex(x, y)
+                // p5.curveVertex(x, y)
+                curve.forEach((segment) => {
+                    const { anchor1, control1, control2, anchor2 } = segment;
+                    p5.bezier(anchor1.x, anchor1.y, control1.x, control1.y, control2.x, control2.y, anchor2.x, anchor2.y)
+                })
+                // if (curveIndex < curves.length - 1) {
+                //     const previous = curves[curveIndex - 1]
+                //     const connection = connectBezier(curve, previous)
+                // }
+                // p5.curveVertex(x + 20 * offsetFactor, y)
+                // p5.curveVertex(x + 20 * offsetFactor, y)
+                // p5.endShape();
+            });
         })
         p5.noLoop()
     };

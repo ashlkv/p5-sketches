@@ -1,4 +1,5 @@
-function BezierCurve(p5, { flowField, start, steps, step = 10, handle = 50 }) {
+// FIXME Move to common
+export function BezierCurve(p5, { flowField, start, steps, step = 10, handle = 50 }) {
     this.vertices = [start];
     this.points = []
     for (let index = 0; index < steps; index++) {
@@ -28,6 +29,25 @@ function BezierCurve(p5, { flowField, start, steps, step = 10, handle = 50 }) {
         segments.push({ anchor1, anchor2, control1, control2 })
         return segments
     }, [])
+    
+    this.reflow = function() {
+        this.vertices.reverse()
+        this.points = this.points.reverse().map((point) => {
+            const { anchor, control1, control2 } = point;
+            return { anchor, control1: control2, control2: control1 };
+        })
+        this.segments = this.segments.reverse().map(segment => {
+            const { anchor1, anchor2, control1, control2 } = segment;
+            return { anchor1: anchor2, control1: control2, anchor2: anchor1, control2: control1 }
+        });
+    }
+    
+    this.getStart = function() {
+        return this.points[0].anchor;
+    }
+    this.getEnd = function() {
+        return this.points.slice(-1)[0].anchor;
+    }
 }
 
 BezierCurve.fromVertices = (p5, {vertices = [], handle = 50}) => {
@@ -69,7 +89,7 @@ BezierCurve.fromVertices = (p5, {vertices = [], handle = 50}) => {
 
 
 /** Simple curve or spline */
-function Curve(p5, { flowField, start, steps, step = 10 }) {
+export function Curve(p5, { flowField, start, steps, step = 10 }) {
     this.vertices = [start];
     for (let i = 0; i < steps; i++) {
         const point = this.vertices[i];

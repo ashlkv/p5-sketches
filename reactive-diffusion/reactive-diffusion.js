@@ -60,8 +60,8 @@ new p5((p5) => {
         
         
         p5.loadPixels();
-        const {reset} = new Pixels(p5, p5.width, p5.height);
-        reset((x, y) => {
+        const {reset} = new Pixels(p5, p5.pixels, {width: p5.width, height: p5.height});
+        reset(({x, y}) => {
             const {a, b} = next[x][y];
             const c = p5.constrain(p5.floor((a - b) * 255), 0, 255);
             return {r: c, g: c, b: c, alpha: 255}

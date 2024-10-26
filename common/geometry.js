@@ -61,6 +61,13 @@ export const getFacingSides = (p5, sides = [], reverse = false) => {
     })
 }
 
+export const absoluteToRelativePolygon = (polygon, origin) => {
+    return polygon.map(({x, y}) => ({ x: x - origin.x, y: y - origin.y }))
+}
+export const relativeToAbsolutePolygon = (polygon, origin) => {
+    return polygon.map((x, y) => ({ x: x + origin.x, y: y + origin.y }))
+}
+
 export const movePolygon = (polygon = [], offset = {x: 0, y: 0}) => {
     return polygon.map(({x, y}) => ({ x: x + offset.x, y: y + offset.y }))
 }
@@ -118,4 +125,28 @@ export const getTouchingSide = (polygon1, polygon2, threshold = 1) => {
                 Math.abs(end1.y - end2.y) < threshold;
         })
     })
+}
+
+export const getClosestPoints = (p5, polygon1, polygon2) => {
+    const grid = polygon1.map(({x: x1, y: y1}) => {
+        return polygon2.map(({x: x2, y: y2}) => {
+            return p5.dist(x1, y1, x2, y2);
+        })
+    })
+    const flat = grid.flat();
+    const min = Math.min.apply(null, flat);
+    const index = flat.indexOf(min);
+    const index1 = Math.floor(index / polygon2.length);
+    const index2 = index % polygon2.length;
+    return [polygon1[index1], polygon2[index2]];
+}
+
+export const getPolygonDirection = (p5, polygon) => {
+    if (polygon.length < 2) {
+        return 0;
+    }
+    const {x: x1, y: y1} = polygon[0]
+    const {x: x2, y: y2} = polygon.slice(-1)[0]
+    const vector = p5.createVector(x1 - x2, y1 - y2);
+    return vector.heading();
 }

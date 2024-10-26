@@ -4,7 +4,6 @@ export function Attractor(p5, position, velocity, mass) {
     // this.velocity.mult(0.01)
     this.acceleration = new P5.Vector(0, 0);
     this.mass = mass;
-    this.vertices = []
     
     this.applyForce = (force) => {
         let acceleration = P5.Vector.div(force, this.mass);
@@ -15,14 +14,6 @@ export function Attractor(p5, position, velocity, mass) {
         this.velocity.add(this.acceleration);
         this.position.add(this.velocity);
         this.acceleration.set(0, 0);
-    }
-    
-    this.render = () => {
-        p5.beginShape();
-        for (const {x, y} of this.vertices) {
-            p5.curveVertex(x, y)
-        }
-        p5.endShape();
     }
     
     this.attract = (mover) => {

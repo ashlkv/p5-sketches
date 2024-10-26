@@ -82,7 +82,7 @@ new p5((p5) => {
     p5.draw = () => {
         p5.translate(0, canvasSize.height * 0.9)
         p5.rotate(p5.PI * -0.5)
-        /*grid.forEach((column, row, value) => {
+        /*grid.traverse((column, row, value) => {
             if (row < 20 || value !== 0) {
                 return;
             }
