@@ -187,10 +187,10 @@ export function getLevels(p5, flowField, options = {noiseScale: 60, noisePersist
     for (let row = 0; row < flowField.values.length; row++) {
         for (let column = 0; column < flowField.values[row].length; column++) {
             const square = {
-                nw: flowField.getCellValue({column, row}),
-                ne: flowField.getCellValue({column: column + 1, row}),
-                se: flowField.getCellValue({column: column + 1, row: row + 1}),
-                sw: flowField.getCellValue({column, row: row + 1})
+                nw: flowField.get({column, row}),
+                ne: flowField.get({column: column + 1, row}),
+                se: flowField.get({column: column + 1, row: row + 1}),
+                sw: flowField.get({column, row: row + 1})
             }
             const min = p5.min(Object.values(square));
             const max = p5.max(Object.values(square));

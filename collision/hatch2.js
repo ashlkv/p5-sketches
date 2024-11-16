@@ -84,20 +84,20 @@ new p5((p5) => {
             
             /*let noiseOffset = 0;
             const increment = 1;
-            for (let index = minY; index < maxY; index = index + flowField2.getValueAt({x: noiseOffset, y: noiseOffset}) * 4) {
+            for (let index = minY; index < maxY; index = index + flowField2.getValueAtPoint({x: noiseOffset, y: noiseOffset}) * 4) {
                 noiseOffset += increment;
                 range.push(index)
             }*/
             // const range = getRange(Math.round(minY), Math.round(maxY)).filter((value, index) => index % 4 === 0);
             const origins = range.reduce((origins, y) => {
                 const point = { x: minX, y };
-                // if (flowField2.getValueAt(point) > 0) {
+                // if (flowField2.getValueAtPoint(point) > 0) {
                     origins.push(point)
                 // }
                 return origins;
             }, []);
             
-            const angle = flowField1.getValueAt(center);
+            const angle = flowField1.getValueAtPoint(center);
             const vector = P5.Vector.fromAngle(angle, width * 1.5)
             const lines = origins.map(({x, y}) => {
                 return [{ x, y }, { x: vector.x, y: y + vector.y }]

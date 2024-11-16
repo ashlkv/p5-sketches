@@ -39,7 +39,7 @@ new p5((p5) => {
     const ruleset = getRuleset(30)
     const firstGeneration = CellularAutomata.getGenerationWithCenterPoint(width);
     
-    const grid = new Grid(width, height)
+    const grid = new Grid(p5, width, height)
     const renderPoint = (x, y, value) => {
         grid[y][x] = value;
     }

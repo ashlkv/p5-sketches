@@ -49,7 +49,7 @@ function FlowField(p5, { width, height, noiseIncrement, cellSize }) {
     }
     
     /** Gets closest vector to the point specified in pixels */
-    this.getValueAt = ({x, y}) => {
+    this.getValueAtPoint = ({x, y}) => {
         const column = Math.round(x / cellSize);
         const row = Math.round(y / cellSize);
         if (!isInBounds({ column, row }, { width, height })) {
@@ -118,7 +118,7 @@ new p5((p5) => {
             line.render()
         }))*/
         
-        // const startingPoints = poissonSample(13000, canvasSize.width, canvasSize.height);
+        // const startingPoints = poissonSample(p5, 13000, canvasSize.width, canvasSize.height);
         const startingPoints = randomSample(p5, 5000, canvasSize.width, canvasSize.height);
         // const startingPoints = [{x: Math.round(p5.random(canvasSize.width)), y: Math.round(p5.random(canvasSize.height))}];
         startingPoints.forEach((start) => {

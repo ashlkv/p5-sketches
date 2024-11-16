@@ -15,8 +15,8 @@ new p5((p5) => {
     const width = 200;
     const height = width;
     
-    let grid = new Grid(width, height, () => ({a: 1, b: 0}));
-    let next = new Grid(width, height, () => ({a: 1, b: 0}));
+    let grid = new Grid(p5, width, height, () => ({a: 1, b: 0}));
+    let next = new Grid(p5, width, height, () => ({a: 1, b: 0}));
     
     const diffusionA = 1;
     const diffusionB = 0.5;

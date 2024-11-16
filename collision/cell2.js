@@ -112,12 +112,12 @@ new p5((p5) => {
         const threshold = 0.65;
         const extrudedCells = cells.filter((cell, index) => {
             const center = getCenter(cell)
-            return flowField.getValueAt(center) > threshold
+            return flowField.getValueAtPoint(center) > threshold
         })
         
         cells.forEach((cell) => {
             const center = getCenter(cell)
-            const noise = flowField.getValueAt(center);
+            const noise = flowField.getValueAtPoint(center);
             if (noise > threshold) {
                 return;
             }

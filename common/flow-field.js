@@ -40,17 +40,13 @@ function FlowField(p5, { width, height, cellSize = 20, initialize = getNoiseValu
     }
     
     /** Gets closest vector to the point specified in pixels */
-    this.getValueAt = ({x, y}) => {
+    this.getValueAtPoint = ({x, y}) => {
         const column = Math.round(x / cellSize);
         const row = Math.round(y / cellSize);
         if (!isInBounds({ column, row }, { width, height })) {
             return undefined;
         }
         return this.values[row][column]
-    }
-    
-    this.getCellValue = ({column, row}) => {
-        return this.values[row]?.[column]
     }
     
     this.getWeightedAverageAt = ({x, y}) => {
@@ -72,6 +68,17 @@ function FlowField(p5, { width, height, cellSize = 20, initialize = getNoiseValu
         }
         const weights = values.reduce((sum, {weight}) => sum + weight, 0)
         return values.reduce((sum, {value, weight}) => sum + value * weight, 0) / weights
+    }
+    
+    this.get = ({column, row}) => {
+        return this.values[row]?.[column]
+    }
+    
+    this.set = ({column, row}, value) => {
+        if (this.values[row]?.[column] === undefined) {
+            return;
+        }
+        return this.values[row][column] = value;
     }
     
     /** @deprecated */

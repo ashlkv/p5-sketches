@@ -48,8 +48,8 @@ new p5((p5) => {
             p5.translate(canvasSize.width / 2, canvasSize.height / 2)
             const sequence = getSequence(index);
             sequence.forEach((number) => {
-                const angle = Math.abs(flowField.getValueAt({ x: number, y: index }) / 20)
-                // const angle = flowField.getCellValue({ column: number, row: index }) / 20
+                const angle = Math.abs(flowField.getValueAtPoint({ x: number, y: index }) / 20)
+                // const angle = flowField.get({ column: number, row: index }) / 20
                 // const angle = p5.PI / 20
                 // const length = angle * 20;
                 const length = 20

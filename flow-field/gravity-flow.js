@@ -107,7 +107,7 @@ new p5((p5) => {
     
     const initializeRepellers = () => {
         if (controls.repellerOn.checked()) {
-            // repellers = poissonSample( 10, canvasSize.width, canvasSize.height * 0.66).map(({ x, y }) => new Repeller(p5, { x, y: canvasSize.height * 0.33 + y}))
+            // repellers = poissonSample( p5, 10, canvasSize.width, canvasSize.height * 0.66).map(({ x, y }) => new Repeller(p5, { x, y: canvasSize.height * 0.33 + y}))
             repellers = randomSample(p5,  25, canvasSize.width * 0.75, canvasSize.height).map(({ x, y }) => new VectorRepeller(p5, {x: x + canvasSize.width * 0.25, y}))
             repellers.forEach((repeller) => {
                 repeller.power = p5.random(controls.repellerPower.value());
@@ -170,7 +170,7 @@ new p5((p5) => {
         // flowField.render()
         
         const count = controls.count.value()
-        // const startingPoints = poissonSample(count, canvasSize.width, canvasSize.height);
+        // const startingPoints = poissonSample(p5, count, canvasSize.width, canvasSize.height);
         // const startingPoints = randomSample(p5, count, canvasSize.width, canvasSize.height);
         // const startingPoints = [{x: Math.round(p5.random(canvasSize.width)), y: Math.round(p5.random(canvasSize.height))}];
         // const startingPoints = [{x: Math.round(p5.random(canvasSize.width)), y: Math.round(p5.random(canvasSize.height))}];

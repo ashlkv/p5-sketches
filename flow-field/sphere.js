@@ -29,7 +29,7 @@ new p5((p5) => {
     window.save = (name) => p5.save(name)
     
     p5.preload = () => {
-      image = p5.loadImage('./images/nervous-system-part.jpg');
+      image = p5.loadImage('./images/sun.jpg');
     }
 
     p5.setup = () => {
@@ -38,15 +38,17 @@ new p5((p5) => {
         window.p5 = p5;
         
         const presets = {
-            smallworms: {"steps": 880, "bias": -0.41, "growth": 1, "step": 4, "count": 500, "cellSize": 2, "seed": 1728315780048},
-            worms: {"steps": 390, growth: 1, "bias": -0.53, "step": 10, "count": 200, "cellSize": 6, "seed": 1728315780048},
-            corals: {"steps": 250, "bias": -0.75, "growth": 0.999, "step": 10, "count": 500, "cellSize": 5, "seed": 1728315780048},
-            corals2: {"steps": 90, "bias": -0.83, "growth": 0.998, "step": 14, "count": 300, "cellSize": 5, "seed": 1728315780048},
-            corals3: {"steps": 90, "bias": -0.74, "growth": 0.9985, "step": 12, "count": 300, "cellSize": 5, "seed": 1728315780048},
-            rainworms: {"steps": 400, "bias": -0.41, "growth": 0.9997, "step": 11, "count": 2300, "cellSize": 5, "seed": 1728315780048},
-            nervous: {"steps": 520, "bias": 0, "growth": 1, "step": 24, "count": 2200, "cellSize": 8, "seed": 1728315780048, image: 'nervous-system-part.jpg'}
+            preset1: {
+                "steps": 390,
+                "bias": 0,
+                "growth": 1,
+                "step": 10,
+                "count": 3700,
+                "cellSize": 4,
+                seed: 1728315780048
+            },
         }
-        const { steps, growth, bias, step, count, cellSize } = presets.smallworms
+        const { steps, growth, bias, step, count, cellSize } = presets.preset1
         
         const container = document.querySelector('#controls');
         
@@ -102,7 +104,11 @@ new p5((p5) => {
         
         
         flowField = FlowField.fromImage(p5, image, {left: 0, top: 0, width: canvasSize.width, height: canvasSize.height},  { cellSize })
-        // flowField = new FlowField(p5, { width: canvasSize.width, height: canvasSize.height, cellSize: 20 })
+        
+        // flowField.values.forEach((columns, row) => columns.forEach((value, column, columns) => {
+        //     columns[column] = value + p5.PI / 2 * 3
+        // }));
+        
         window.flowField = flowField
         // flowField.render()
         // flowField.renderGrid()
@@ -118,8 +124,6 @@ new p5((p5) => {
         });
         
         window.startingPoints = startingPoints;
-        // const startingPoints = [{x: Math.round(p5.random(canvasSize.width)), y: Math.round(p5.random(canvasSize.height))}];
-        // const startingPoints = [{x: Math.round(canvasSize.width / 2), y: Math.round(canvasSize.height / 2)}];
         
         const curves = startingPoints.map((start) => {
             const curve = new Curve(p5, { start, steps, flowField, step, bias, growth })
@@ -135,14 +139,9 @@ new p5((p5) => {
         
         curves.forEach((curve, index, curves) => {
             p5.strokeWeight(1)
-            // p5.stroke(244, 85, 49, 100);
-            p5.stroke(255, 0, 0, 255);
             p5.noFill()
             
-            // Dip into paint
-            // p5.circle(20, canvasSize.height - 20, 40 + p5.random() * 2)
-            
-            p5.stroke(0, 0, 0, 255);
+            p5.stroke(0, 0, 0, 125);
             p5.beginShape();
             curve.vertices.forEach(({x, y}, index) => {
                 p5.curveVertex(x, y);
@@ -152,18 +151,6 @@ new p5((p5) => {
                 }
             })
             p5.endShape();
-            /*
-            // Dots at vertices
-            p5.strokeWeight(3)
-            p5.stroke(0, 0, 0, 255);
-            curve.vertices.forEach(({x, y}) => {
-                p5.point(x, y)
-            })
-            
-            // Red dot at start
-            p5.strokeWeight(5)
-            p5.stroke(255, 0, 0, 255);
-            p5.point(curve.vertices[0].x, curve.vertices[0].y)*/
         })
         
         p5.noLoop();

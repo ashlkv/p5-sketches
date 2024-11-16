@@ -50,13 +50,13 @@ new p5((p5) => {
     }
 
     p5.draw = () => {
-        // const origins = poissonSample(100, canvasSize.width, canvasSize.height);
+        // const origins = poissonSample(p5, 100, canvasSize.width, canvasSize.height);
         const origins = randomSample(p5, 200, canvasSize.width - 150, canvasSize.height - 100);
         origins.forEach(({x, y}) => {
             if (y < 200 || x < 250) {
                 return;
             }
-            const size = noiseGrid.getValueAt({ x, y })
+            const size = noiseGrid.getValueAtPoint({ x, y })
             const clam = [];
             const clamCellSize = cellSize;
             p5.noiseSeed(Date.now())

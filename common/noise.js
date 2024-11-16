@@ -1,13 +1,13 @@
 import '../libraries/poisson-disk-sampling.min.js'
 
-export function poissonSample(count, width, height) {
+export function poissonSample(p5, count, width, height) {
   let distance = width / Math.sqrt((count * height) / width);
   let sampling = new PoissonDiskSampling({
     shape: [width, height],
     minDistance: distance * 0.8,
     maxDistance: distance * 1.6,
     tries: 15
-  });
+  }, p5.random);
   return sampling.fill().map(([x, y]) => ({x, y}));
 }
 

@@ -83,7 +83,7 @@ new p5((p5) => {
             
             // const repellerOrigins = [{ x: 150, y: canvasSize.height / 2 }];
             const repellerOrigins = randomSample(p5, 5, canvasSize.width * 0.75, canvasSize.height);
-            // const repellerOrigins = poissonSample( 10, canvasSize.width, canvasSize.height * 0.66);
+            // const repellerOrigins = poissonSample(p5, 10, canvasSize.width, canvasSize.height * 0.66);
             // repellers = repellerOrigins.map(({ x, y }) => new Repeller(p5, x, canvasSize.height * 0.33 + y))
             /*repellers = repellerOrigins
                 .map(({x, y}) => {
@@ -155,7 +155,7 @@ new p5((p5) => {
         // flowField.render()
         
         const count = controls.count.value()
-        const curveOrigins = poissonSample(count, canvasSize.width, canvasSize.height);
+        const curveOrigins = poissonSample(p5, count, canvasSize.width, canvasSize.height);
         // const curveOrigins = randomSample(p5, count, canvasSize.width, canvasSize.height);
         // const curveOrigins = [{x: 0, y: Math.round(canvasSize.height / 2)}];
         // const curveOrigins = [{x: Math.round(p5.random(canvasSize.width)), y: Math.round(p5.random(canvasSize.height))}];

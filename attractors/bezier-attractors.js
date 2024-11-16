@@ -77,7 +77,7 @@ new p5((p5) => {
         return { x: origin.x + vector.x, y: origin.x + vector.y }
     }
     
-    const grid = new Grid(Math.round(width / 100), Math.round(height / 100))
+    const grid = new Grid(p5, Math.round(width / 100), Math.round(height / 100))
     const getNextOriginInGrid = () => {
         const { column, row } = grid.next()
         return { x: column * 100 + 50, y: row * 100 + 50 }
@@ -104,7 +104,7 @@ new p5((p5) => {
             let curves = new Array(count).fill(undefined).map(() => [])
             
             // const origin = randomSample(p5, 1, canvasSize.width, canvasSize.height)[0];
-            // const origin = poissonSample( 1, canvasSize.width, canvasSize.height)[0];
+            // const origin = poissonSample(p5, 1, canvasSize.width, canvasSize.height)[0];
             // const origin = getNextOriginInLoop(angle, phase, noiseMax, center, 400)
             // const origin = getNextOriginInGrid()
             const origin = getNextOriginInGrowth()
@@ -120,7 +120,7 @@ new p5((p5) => {
             angle += 0.1
             phase += p5.PI / 3
             
-            const noise = flowField.getValueAt(origin)
+            const noise = flowField.getValueAtPoint(origin)
             let radius = Math.round(noise * 50);
             if (!radius) {
                 return;

@@ -50,7 +50,7 @@ new p5((p5) => {
         // attractors = randomSample(p5, count, width, height).map(({ x, y }) => {
         //     return new Attractor(p5, p5.createVector(x, y), P5.Vector.random2D(), 10)
         // })
-        // attractors = poissonSample(count, width, height).slice(0, count).map(({ x, y }) => {
+        // attractors = poissonSample(p5, count, width, height).slice(0, count).map(({ x, y }) => {
         //     return new Attractor(p5, p5.createVector(x, y), P5.Vector.random2D(), 10)
         // })
         

@@ -56,8 +56,8 @@ new p5((p5) => {
             if (value1 === undefined) {
                 return;
             }
-            const radiusNoise = p5.map(flowField1.getValueAt({ x: x2, y: y2 }), 0, 4, 1.1, 1.5)
-            // const radiusNoise = flowField1.getValueAt({ x: x2, y: y2 })
+            const radiusNoise = p5.map(flowField1.getValueAtPoint({ x: x2, y: y2 }), 0, 4, 1.1, 1.5)
+            // const radiusNoise = flowField1.getValueAtPoint({ x: x2, y: y2 })
             
             const radius1 = value1 / p5.TWO_PI * 300 * radiusNoise;
             const radius2 = value2 / p5.TWO_PI * 300 * radiusNoise;

@@ -13,7 +13,7 @@ new p5((p5) => {
         p5.stroke(0);
         
         const points = randomSample(p5, 1000, canvasSize.width, canvasSize.height)
-        // const points = poissonSample(100, canvasSize.width, canvasSize.height)
+        // const points = poissonSample(p5, 100, canvasSize.width, canvasSize.height)
         const flatPoints = points.map(({x, y}) => [x, y]).flat();
         delaunay = new d3.Delaunay(flatPoints)
     }

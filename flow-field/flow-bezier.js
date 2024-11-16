@@ -32,7 +32,7 @@ new p5((p5) => {
         
         const origin = { x: 0, y: canvasSize.height };
         
-        const startingPoints = poissonSample( 100, canvasSize.width, canvasSize.height).sort((first, second) => {
+        const startingPoints = poissonSample(p5, 100, canvasSize.width, canvasSize.height).sort((first, second) => {
             const distance1 = p5.dist(origin.x, origin.y, first.x, first.y)
             const distance2 = p5.dist(origin.x, origin.y, second.x, second.y)
             return distance1 - distance2

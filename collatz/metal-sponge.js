@@ -56,7 +56,7 @@ new p5((p5) => {
         const getSequence = (from) => {
             const sequence = [];
             for (let number = 0; number < from; number ++) {
-                const value = flowField.getCellValue({ column: number, row: from })
+                const value = flowField.get({ column: number, row: from })
                 sequence.push(value > 0.5 ? 1 : 2);
             }
             return sequence;
