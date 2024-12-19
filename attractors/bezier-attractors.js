@@ -15,7 +15,7 @@ new p5((p5) => {
     p5.randomSeed(seed)
     p5.noiseSeed(seed)
     
-    const width = window.innerWidth;
+    const width = Math.round(window.innerHeight * 1.41);
     const height = window.innerHeight;
     const canvasSize = { width, height };
     const center = { x: canvasSize.width / 2, y: canvasSize.height / 2 };

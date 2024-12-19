@@ -28,7 +28,7 @@ export function Spiral(p5, {path, steps = 100, step = 5, radius = 20, frequency 
     
     if (steps === Infinity) {
         let index = 0;
-        while (index < 4000/* && p5.createVector(end.x - center.x, end.y - center.y).heading()*/) {
+        while (index < 10000/* && p5.createVector(end.x - center.x, end.y - center.y).heading()*/) {
             this.addVertex(index);
             index ++;
         }

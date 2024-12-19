@@ -24,7 +24,7 @@ new p5((p5) => {
     const height = window.innerHeight;
     let attractors = [];
     let repellers = [];
-    const count = 4;
+    const count = 2;
     const colors = ['#ff0000', '#00ff00', '#0000ff', '#000000', '#ff00ff', '#ffff00', '#00ffff']
     const curves = new Array(count).fill(undefined).map(() => [])
     
@@ -67,8 +67,8 @@ new p5((p5) => {
         
         attractors[0] = new Attractor(p5, P5.Vector.random2D(), P5.Vector.random2D(), 10)
         attractors[1] = new Attractor(p5, new P5.Vector(50, 200), P5.Vector.random2D(), 10)
-        attractors[2] = new Attractor(p5, new P5.Vector(200, 350), P5.Vector.random2D(), 10)
-        attractors[3] = new Attractor(p5, new P5.Vector(200, 50), P5.Vector.random2D(), 10)
+        // attractors[2] = new Attractor(p5, new P5.Vector(200, 350), P5.Vector.random2D(), 10)
+        // attractors[3] = new Attractor(p5, new P5.Vector(200, 50), P5.Vector.random2D(), 10)
         
         repellers.forEach((repeller) => {
             const { x, y } = repeller.position;
