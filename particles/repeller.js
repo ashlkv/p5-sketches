@@ -2,10 +2,8 @@ export function Repeller(p5, position) {
     this.power = 150;
     this.position = position;
     
-    this.display = () => {
-        p5.stroke(255);
-        p5.strokeWeight(2);
-        p5.fill(127);
+    this.display = (fill = 127) => {
+        p5.fill(fill);
         p5.ellipse(this.position.x, this.position.y, 32, 32);
     }
     
