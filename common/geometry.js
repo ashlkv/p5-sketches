@@ -150,3 +150,19 @@ export const getPolygonDirection = (p5, polygon) => {
     const vector = p5.createVector(x1 - x2, y1 - y2);
     return vector.heading();
 }
+
+export const isPointInPolygon = (point, polygon) => {
+    const {x, y} = point;
+    let inside = false;
+
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+        const {x: x1, y: y1} = polygon[i];
+        const {x: x2, y: y2} = polygon[j];
+        // Raycasting algorithm
+        // https://wrfranklin.org/Research/Short_Notes/pnpoly.html
+        const intersect = (y1 > y) !== (y2 > y) && (x < (x2 - x1) * (y - y1) / (y2 - y1) + x1);
+        inside = intersect ? !inside : inside;
+    }
+
+    return inside;
+}

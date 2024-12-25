@@ -1,18 +1,23 @@
-import { Particle } from './particle.js'
+import { Particle } from './vector-particle.js'
 
-export function ParticleSystem(p5, position, speed = 1, color = 0) {
+export function Emitter(p5, position, speed = 1, color = 0, ranges = [[0, Math.PI], [Math.PI, Math.PI * 2]]) {
     this.position = position.copy();
     this.particles = [];
     /* Speed in particles per frame */
     this.speed = speed;
     this.color = color;
     
+    this.display = (fill = 127) => {
+        p5.stroke('#0000ff99');
+        p5.strokeWeight(5);
+        p5.fill(fill);
+        p5.point(this.position.x, this.position.y)
+    }
+    
     this.addParticle = (x, y) => {
-        if (x !== undefined && y !== undefined) {
-            this.particles.push(new Particle(p5, p5.createVector(x, y), color));
-        } else {
-            this.particles.push(new Particle(p5, this.position, color));
-        }
+        const position = x !== undefined && y !== undefined ? p5.createVector(x, y) : this.position;
+        const particle = new Particle(p5, position, color, ranges);
+        this.particles.push(particle);
     }
     
     this.run = (x, y) => {

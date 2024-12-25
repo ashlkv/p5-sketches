@@ -18,12 +18,17 @@ export function Particle(p5, position, color = 0, ranges = [[0, Math.PI], [Math.
     this.position = position instanceof P5.Vector ? position : new p5.createVector(position.x, position.y);
     this.velocity = P5.Vector.fromAngle(angle, p5.random(1, 5));
     this.acceleration = p5.createVector(0, 0);
-    this.lifespan = 1024.0;
+    this.lifespan = Infinity;
     this.color = typeof color === "number" ? [color] : hex2rgb(color);
+    this.points = [];
     
     this.run = () => {
         this.update();
-        this.display();
+        this.points.push({ x: this.position.x, y: this.position.y })
+        
+        p5.stroke(...this.color, 125);
+        p5.strokeWeight(1)
+        p5.point(this.position.x, this.position.y)
     }
     
     this.applyForce = (force) => {
@@ -37,16 +42,24 @@ export function Particle(p5, position, color = 0, ranges = [[0, Math.PI], [Math.
         this.lifespan -= 2;
         
         this.velocity.limit(5);
+        this.points.push({ x: this.position.x, y: this.position.y })
     }
     
     // Method to display
-    this.display = () => {
-        p5.stroke(...this.color, this.lifespan);
-        p5.strokeWeight(1);
-        p5.point(this.position.x, this.position.y)
-        
-        // p5.fill(127, this.lifespan);
-        // p5.ellipse(this.position.x, this.position.y, 12, 12);
+    this.render = () => {
+        p5.stroke(...this.color, 125);
+        p5.strokeWeight(0.5)
+        p5.noFill()
+        p5.beginShape()
+        // const from = p5.random(0, this.points.length - 1)
+        // const to = p5.random(from, this.points.length - 1)
+        this.points.forEach(({ x, y }, index) => {
+            // if (index < from && index > to) {
+            //     return;
+            // }
+            p5.curveVertex(x, y)
+        })
+        p5.endShape();
     }
     
     // Is the particle still useful?

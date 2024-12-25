@@ -30,8 +30,6 @@ new p5((p5) => {
             outsidePositions.push({ column, row })
         } else {
             insidePositions.push({ column, row })
-            const index = distances.findIndex((distance, index) => distance < radii[index])
-            const radius = radii[index];
             const point = grid.at(column, row);
             const offset = /*Math.abs(p5.map(radius, 0, 200, 1.5, 4))*/ 2.5
             point.x = point.x + cellSize * offset
