@@ -1,13 +1,12 @@
-export function Attractor(p5, position, power = 150, oneway = true) {
+export function Attractor(p5, position, power = 0.2, oneway = true) {
     this.power = power;
     this.position = position instanceof P5.Vector ? position : new p5.createVector(position.x, position.y);
     /** Attracts only the particles which move to its direction */
     this.oneway = oneway;
     
-    this.display = (fill = 127) => {
-        p5.stroke('#ff000099');
+    this.display = (color = '#ff000099') => {
+        p5.stroke(color);
         p5.strokeWeight(5);
-        p5.fill(fill);
         p5.point(this.position.x, this.position.y)
     }
     
@@ -21,27 +20,35 @@ export function Attractor(p5, position, power = 150, oneway = true) {
         // dir.mult(force); // Get force vector --> magnitude * direction
         // return dir;
         
-        let force = P5.Vector.sub(this.position, particle.position);
+        /*let force = P5.Vector.sub(this.position, particle.position);
         let distanceSq = p5.constrain(force.magSq(), 100, 1000);
         let G = this.power;
         let strength = G / distanceSq;
         force.setMag(strength);
-        return force;
+        return force;*/
     
-        /*
-        const isTowards = this.position.dist(P5.Vector.add(particle.position, particle.velocity)) < this.position.dist(particle.position);
+        const distance = this.position.dist(particle.position);
+        const nextDistance = this.position.dist(P5.Vector.add(particle.position, particle.velocity));
+        const isTowards = nextDistance <= distance;
         
         let direction = P5.Vector.sub(this.position, particle.position);
         direction.normalize();
-        // if (!isTowards && this.oneway) {
-        //     direction.setMag(direction.mag() + p5.PI);
-        // }
-        direction.mult(0.2);
-        particle.acceleration = direction;
-        particle.velocity.add(direction);
-        // particle.velocity.limit(10);
-        */
-        
-        particle.position.add(this.velocity);
+        if (!isTowards && this.oneway) {
+            // let angle = (distance * distance) / p5.PI;
+            // direction.setHeading(direction.heading() + p5.constrain(angle, 0, p5.PI));
+            
+            let magnitude = direction.mag(); // Distance between objects
+            magnitude = p5.constrain(magnitude, 1, 100); // Keep distance within a reasonable range
+            direction.mult(-1 * this.power / (magnitude * magnitude)); // Get force vector --> magnitude * direction
+            particle.acceleration = direction;
+            particle.velocity.add(direction);
+        } else {
+            direction.mult(this.power);
+            particle.acceleration = direction;
+            particle.velocity.add(direction);
+            // particle.velocity.limit(10);
+            
+            particle.position.add(this.velocity);    
+        }
     }
 }
