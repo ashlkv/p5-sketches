@@ -3,10 +3,10 @@
  * Width and height are required, because pixels is a single-dimensional array
  * In a single-dimensional array there is no way to tell when one line ends and the other begins.
  */
-const Pixels = function(p5, pixels = undefined, { width, height }) {
+const Pixels = function(p5, pixels = undefined, { width, height }, density = 1) {
     pixels = pixels || p5.pixels;
-    const density = p5.pixelDensity();
-    const levels = 4
+    density = density || p5.pixelDensity();
+    const levels = 4 // rgba
     
     const get = ({ x, y }) => {
         const index = (x + y * width) * levels * Math.pow(density, 2);
@@ -18,9 +18,11 @@ const Pixels = function(p5, pixels = undefined, { width, height }) {
     }
     
     return {
+        width,
+        height,
         reset(initialize = ({x, y}) => ({r: 0, g: 0, b: 0, alpha: 255})) {
-            for (let x = 0; x < width; x++) {
-                for (let y = 0; y < height; y++) {
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
                     const index = (x + y * width) * levels * Math.pow(density, 2);
                     const {r, g, b, alpha} = initialize({x, y});
                     pixels[index] = r;
@@ -70,9 +72,9 @@ const Pixels = function(p5, pixels = undefined, { width, height }) {
                 pixels[index + 15] = alpha
             }
         },
-        forEach(predicate = ({ value, x, y }) => {}) {
-            for (let x = 0; x < width; x++) {
-                for (let y = 0; y < height; y++) {
+        forEach(predicate = (value, x, y) => {}) {
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
                     const value = get({x, y});
                     predicate(value, x, y)
                 }
@@ -83,8 +85,7 @@ const Pixels = function(p5, pixels = undefined, { width, height }) {
     }
 }
 
-Pixels.slice = (p5, pixels, size = { width: undefined, height: undefined }, { left = 0, top = 0, width, height } = {}) => {
-    const whole = new Pixels(p5, pixels, size);
+Pixels.slice = (p5, whole, { left = 0, top = 0, width, height } = {}) => {
     const slice = new Pixels(p5, [], { width, height });
     slice.reset(({ x, y }) => {
         return whole.get({ x: left + x, y: top + y })

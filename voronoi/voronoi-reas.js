@@ -18,9 +18,9 @@ new p5((p5) => {
     const grid1 = new Grid(p5, Math.floor(canvasSize.width / cellSize), Math.floor(canvasSize.height / cellSize), (column, row) => {
         return { x: column * cellSize, y: row * cellSize }
     })
-    // const seed = 1728315780048
+    const seed = 1728315780048
     // const seed = 1735122836931
-    const seed = Date.now()
+    // const seed = Date.now()
     p5.randomSeed(seed)
     console.log(seed)
     

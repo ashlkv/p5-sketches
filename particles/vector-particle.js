@@ -53,10 +53,11 @@ export function Particle(p5, position, color = 0, ranges = [[0, Math.PI], [Math.
         p5.beginShape()
         // const from = p5.random(0, this.points.length - 1)
         // const to = p5.random(from, this.points.length - 1)
+        const length = this.points.length;
         this.points.forEach(({ x, y }, index) => {
-            // if (index < from && index > to) {
-            //     return;
-            // }
+            if (index === 0 || index === length - 1) {
+                p5.curveVertex(x, y)
+            }
             p5.curveVertex(x, y)
         })
         p5.endShape();

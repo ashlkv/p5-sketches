@@ -56,4 +56,10 @@ export function Emitter(p5, position, speed = 1, color = 0, ranges = [[0, Math.P
         }
     }
     
+    this.renderLines = () => {
+        this.particles.forEach(particle => {
+            particle.points.unshift({ x: this.position.x, y: this.position.y })
+            particle.render()
+        });
+    }
 }

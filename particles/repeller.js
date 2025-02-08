@@ -1,5 +1,5 @@
-export function Repeller(p5, position) {
-    this.power = 150;
+export function Repeller(p5, position, power = 100) {
+    this.power = power;
     this.position = position;
     
     this.display = (color = '#00ff0099') => {
@@ -12,7 +12,7 @@ export function Repeller(p5, position) {
         let direction = P5.Vector.sub(this.position, particle.position); // Calculate direction of force
         let magnitude = direction.mag(); // Distance between objects
         direction.normalize(); // Normalize vector (distance doesn't matter here, we just want this vector for direction)
-        magnitude = p5.constrain(magnitude, 1, 100); // Keep distance within a reasonable range
+        magnitude = p5.constrain(magnitude, 1, 200); // Keep distance within a reasonable range
         let force = -1 * this.power / (magnitude * magnitude); // Repelling force is inversely proportional to distance
         direction.mult(force); // Get force vector --> magnitude * direction
         return direction;

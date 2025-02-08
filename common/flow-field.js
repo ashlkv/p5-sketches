@@ -147,7 +147,8 @@ FlowField.fromImage = function(p5, image, slice = { left: 0, top: 0, width: unde
 }
 
 FlowField.fromPixels = function(p5, pixels, size, slice, { cellSize } = { cellSize: 1 }) {
-    const { get: getPixel } = Pixels.slice(p5, pixels, size, slice);
+    const whole = new Pixels(p5, pixels, size);
+    const { get: getPixel } = Pixels.slice(p5, whole, slice);
     const initialize = (column, row) => {
         const { r, g, b } = getPixel({x: column, y: row });
         return p5.map((r + g + b) / 3, 0, 255, -1, 1);

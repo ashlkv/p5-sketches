@@ -21,7 +21,7 @@ function Curve(p5, { flowField, start, steps, bias = 0, growth = 1, step = 10 })
 
 new p5((p5) => {
     const cellSize = 50;
-    const canvasSize = { width: Math.floor(window.innerWidth / cellSize) * cellSize, height: Math.floor(window.innerHeight / cellSize) * cellSize }
+    const canvasSize = { width: Math.ceil(window.innerWidth / cellSize) * cellSize, height: Math.ceil(window.innerHeight / cellSize) * cellSize }
     const controls = {}
     let flowField;
     let image;
@@ -29,7 +29,8 @@ new p5((p5) => {
     window.save = (name) => p5.save(name)
     
     p5.preload = () => {
-      image = p5.loadImage('./images/nervous-system-part.jpg');
+      // image = p5.loadImage('./images/nervous-system-part.jpg');
+      image = p5.loadImage('./images/worley-noise.jpg');
     }
 
     p5.setup = () => {
@@ -44,9 +45,17 @@ new p5((p5) => {
             corals2: {"steps": 90, "bias": -0.83, "growth": 0.998, "step": 14, "count": 300, "cellSize": 5, "seed": 1728315780048},
             corals3: {"steps": 90, "bias": -0.74, "growth": 0.9985, "step": 12, "count": 300, "cellSize": 5, "seed": 1728315780048},
             rainworms: {"steps": 400, "bias": -0.41, "growth": 0.9997, "step": 11, "count": 2300, "cellSize": 5, "seed": 1728315780048},
-            nervous: {"steps": 520, "bias": 0, "growth": 1, "step": 24, "count": 2200, "cellSize": 8, "seed": 1728315780048, image: 'nervous-system-part.jpg'}
+            nervous: {"steps": 520, "bias": 0, "growth": 1, "step": 24, "count": 2200, "cellSize": 8, "seed": 1728315780048, image: 'nervous-system-part.jpg'},
+            calamari: {
+                "steps": 90,
+                "bias": 0.52,
+                "growth": 1,
+                "step": 68,
+                "count": 2500,
+                "cellSize": 5
+            }
         }
-        const { steps, growth, bias, step, count, cellSize } = presets.smallworms
+        const { steps, growth, bias, step, count, cellSize } = presets.calamari
         
         const container = document.querySelector('#controls');
         
@@ -142,7 +151,7 @@ new p5((p5) => {
             // Dip into paint
             // p5.circle(20, canvasSize.height - 20, 40 + p5.random() * 2)
             
-            p5.stroke(0, 0, 0, 255);
+            p5.stroke(0, 0, 0, 200);
             p5.beginShape();
             curve.vertices.forEach(({x, y}, index) => {
                 p5.curveVertex(x, y);
