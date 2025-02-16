@@ -81,14 +81,32 @@ const Pixels = function(p5, pixels = undefined, { width, height }, density = 1) 
             }
             
         },
-        pixels
+        pixels,
+        equals(pixels) {
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const { r: r1, g: g1, b: b1, alpha: alpha1 } = get({ x, y });
+                    const { r: r2, g: g2, b: b2, alpha: alpha2 } = pixels.get({ x, y });
+                    if (r1 !== r2 || g1 !== g2 || b1 !== b2 || alpha1 !== alpha2) {
+                        return false;    
+                    }
+                }
+            }   
+            return true;
+        }
     }
 }
 
-Pixels.slice = (p5, whole, { left = 0, top = 0, width, height } = {}) => {
+/** Returns a slice of a whole, pixels copied. */
+Pixels.slice = (p5, whole, { left = 0, top = 0, width, height } = {}, wrap = false) => {
     const slice = new Pixels(p5, [], { width, height });
     slice.reset(({ x, y }) => {
-        return whole.get({ x: left + x, y: top + y })
+        const coordinates = { x: left + x, y: top + y };
+        if (wrap) {
+            coordinates.x = coordinates.x % whole.width;
+            coordinates.y = coordinates.y % whole.height;
+        }
+        return whole.get(coordinates);
     })
     return slice;
 }
