@@ -10,6 +10,7 @@ new p5((p5) => {
         funky: {"oddAngle": 0.235619449019235, "evenAngle": 0.549778714378214, "step": 6, "iterations": 6640, "roundness": 2},
         funky2: {"oddAngle": 0.267035375555132, "evenAngle": 0.549778714378214, "step": 6, "iterations": 6639, "roundness": 2},
         original: {"oddAngle": 0.141371669411541, "evenAngle": 0.141371669411541, "step": 6, "iterations": 6639, "roundness": 2},
+        seaweed: {"oddAngle": 0.204203522483337, "evenAngle": 0.235619449019235, "step": 11, "iterations": 342, "roundness": 1},
         bunch: {"oddAngle": 0.109955742875643, "evenAngle": 0.172787595947439, "step": 8, "iterations": 635, "roundness": 2},
         round2: {
             "oddAngle": 0.204203522483337,
@@ -19,7 +20,7 @@ new p5((p5) => {
             "roundness": 4
         }
     }
-    const preset = presets.round2
+    const preset = presets.seaweed;
     const canvasSize = {width: window.innerWidth, height: window.innerHeight};
     const controls = {}
     window.save = (name) => p5.save(name)
@@ -75,11 +76,11 @@ new p5((p5) => {
         
         const growth = getGrowth(p5, {
             from: iterations,
-            origin: {x: canvasSize.width * 0.6, y: canvasSize.height / 2},
+            origin: {x: canvasSize.width * 0.1, y: canvasSize.height / 2},
             initialAngle: p5.PI * 1.5,
             oddAngle,
             evenAngle,
-            step: (index) => (flowField.getValueAt({ x: index, y: 0 }) + 1) * step * 2,
+            step: (index) => (flowField.getValueAtPoint({ x: index, y: 0 }) + 1) * step * 2,
             roundness,
             optimized: true
         });
